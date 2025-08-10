@@ -1,0 +1,88 @@
+// Atlas Agent Database Schema
+// PlanetScale MySQL database for geography game
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// Game Sessions
+model GameSession {
+  id               String   @id @default(cuid())
+  agentName        String
+  score            Int      @default(0)
+  completedRegions Json     @default("[]")
+  unlockedRegions  Json     @default("[\"Europe\"]")
+  currentMission   String?
+  agentLevel       String   @default("Trainee")
+  startTime        DateTime @default(now())
+  lastActivity     DateTime @updatedAt
+  
+  // Relations
+  answers          Answer[]
+  leaderboardEntry LeaderboardEntry?
+  
+  @@map("game_sessions")
+}
+
+// Questions Database
+model Question {
+  id            String   @id @default(cuid())
+  question      String   @db.Text
+  options       Json     // Array of 4 options
+  correctAnswer String
+  difficulty    String   // easy, medium, hard
+  region        String
+  createdAt     DateTime @default(now())
+  
+  // Relations
+  answers       Answer[]
+  
+  @@map("questions")
+  @@index([region])
+  @@index([difficulty])
+}
+
+// Answer History
+model Answer {
+  id            String      @id @default(cuid())
+  sessionId     String
+  questionId    String
+  selectedAnswer String
+  isCorrect     Boolean
+  pointsEarned  Int
+  answeredAt    DateTime    @default(now())
+  
+  // Relations
+  session       GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question      Question    @relation(fields: [questionId], references: [id])
+  
+  @@map("answers")
+  @@index([sessionId])
+  @@index([questionId])
+}
+
+// Leaderboard
+model LeaderboardEntry {
+  id                String      @id @default(cuid())
+  sessionId         String      @unique
+  agentName         String
+  score             Int
+  completedRegions  Json        @default("[]")
+  agentLevel        String
+  regionsCompleted  Int
+  completedAt       DateTime    @default(now())
+  
+  // Relations
+  session           GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  @@map("leaderboard")
+  @@index([score])
+  @@index([agentLevel])
+  @@index([completedAt])
+}
