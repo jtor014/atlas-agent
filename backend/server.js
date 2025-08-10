@@ -75,8 +75,8 @@ app.use('*', (req, res) => {
   });
 });
 
-app.listen(PORT, '127.0.0.1', () => {
-  console.log(`🚀 Atlas Agent API server running on http://127.0.0.1:${PORT}`);
-  console.log(`📊 Health check: http://127.0.0.1:${PORT}/health`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Atlas Agent API server running on http://0.0.0.0:${PORT}`);
+  console.log(`📊 Health check: http://0.0.0.0:${PORT}/health`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
