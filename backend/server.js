@@ -18,8 +18,15 @@ const PORT = process.env.PORT || 3002;
 app.use(helmet());
 
 // CORS configuration for frontend
+const allowedOrigins = [
+  'http://127.0.0.1:3001',
+  'http://localhost:3001', 
+  'https://frontend-five-ashy-41.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://127.0.0.1:3001',
+  origin: allowedOrigins,
   credentials: true
 }));
 
