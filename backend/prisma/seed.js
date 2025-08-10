@@ -92,13 +92,15 @@ const questionsData = [
 async function main() {
   console.log('🌱 Seeding Atlas Agent database...');
   
-  // Clear existing data
-  await prisma.answer.deleteMany();
-  await prisma.leaderboardEntry.deleteMany();
-  await prisma.gameSession.deleteMany();
-  await prisma.question.deleteMany();
+  // Check if questions already exist
+  const existingQuestions = await prisma.question.count();
   
-  console.log('🗑️  Cleared existing data');
+  if (existingQuestions > 0) {
+    console.log(`✅ Database already seeded with ${existingQuestions} questions`);
+    return;
+  }
+  
+  console.log('📝 Adding initial questions...');
   
   // Seed questions
   for (const questionData of questionsData) {
