@@ -11,23 +11,56 @@ datasource db {
   relationMode = "prisma"
 }
 
+// User Profiles (Google OAuth)
+model User {
+  id            String   @id @default(cuid())
+  googleId      String   @unique
+  email         String   @unique
+  name          String
+  avatar        String?
+  createdAt     DateTime @default(now())
+  lastLoginAt   DateTime @updatedAt
+  
+  // User Progress
+  totalScore    Int      @default(0)
+  agentLevel    String   @default("Trainee")
+  completedRegions Json  @default("[]")
+  unlockedRegions  Json  @default("[\"western-europe\"]")
+  
+  // Stats
+  totalQuestions   Int @default(0)
+  correctAnswers   Int @default(0)
+  gamesPlayed      Int @default(0)
+  
+  // Relations  
+  gameSessions     GameSession[]
+  leaderboardEntries LeaderboardEntry[]
+  
+  @@map("users")
+  @@index([email])
+  @@index([totalScore])
+}
+
 // Game Sessions
 model GameSession {
   id               String   @id @default(cuid())
+  userId           String?  // Optional - allows guest play
   agentName        String
   score            Int      @default(0)
   completedRegions Json     @default("[]")
-  unlockedRegions  Json     @default("[\"Europe\"]")
+  unlockedRegions  Json     @default("[\"western-europe\"]")
   currentMission   String?
   agentLevel       String   @default("Trainee")
   startTime        DateTime @default(now())
   lastActivity     DateTime @updatedAt
   
   // Relations
+  user             User?    @relation(fields: [userId], references: [id])
   answers          Answer[]
   leaderboardEntry LeaderboardEntry?
   
   @@map("game_sessions")
+  @@index([userId])
 }
 
 // Questions Database
@@ -71,6 +104,7 @@ model Answer {
 model LeaderboardEntry {
   id                String      @id @default(cuid())
   sessionId         String      @unique
+  userId            String?     // Optional - allows guest entries
   agentName         String
   score             Int
   completedRegions  Json        @default("[]")
@@ -79,9 +113,11 @@ model LeaderboardEntry {
   completedAt       DateTime    @default(now())
   
   // Relations
+  user              User?       @relation(fields: [userId], references: [id])
   session           GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   
   @@map("leaderboard")
+  @@index([userId])
   @@index([score])
   @@index([agentLevel])
   @@index([completedAt])
