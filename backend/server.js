@@ -21,17 +21,33 @@ const PORT = process.env.PORT || 3002;
 app.use(helmet());
 
 // CORS configuration for frontend
-const allowedOrigins = [
-  'http://127.0.0.1:3001',
-  'http://localhost:3001', 
-  'https://frontend-five-ashy-41.vercel.app',
-  'https://frontend-p0y3kpelr-joshs-projects-37e0c8a8.vercel.app',
-  'https://frontend-43qftfcgo-joshs-projects-37e0c8a8.vercel.app',
-  process.env.FRONTEND_URL
-].filter(Boolean);
-
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost for development
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      return callback(null, true);
+    }
+    
+    // Allow any joshs-projects Vercel subdomain
+    if (origin.match(/^https:\/\/frontend-[a-z0-9]+-joshs-projects-37e0c8a8\.vercel\.app$/)) {
+      return callback(null, true);
+    }
+    
+    // Allow custom domain
+    if (origin === 'https://atlas-agent.torkington.au') {
+      return callback(null, true);
+    }
+    
+    // Allow specific frontend URL from env
+    if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 

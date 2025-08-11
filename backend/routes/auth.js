@@ -81,11 +81,11 @@ router.get('/google/callback',
       );
 
       // Redirect to frontend with token
-      const frontendUrl = process.env.FRONTEND_URL || 'https://frontend-43qftfcgo-joshs-projects-37e0c8a8.vercel.app';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://atlas-agent.torkington.au';
       res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
     } catch (error) {
       console.error('Callback error:', error);
-      const frontendUrl = process.env.FRONTEND_URL || 'https://frontend-43qftfcgo-joshs-projects-37e0c8a8.vercel.app';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://atlas-agent.torkington.au';
       res.redirect(`${frontendUrl}/auth/error`);
     }
   }
