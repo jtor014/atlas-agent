@@ -26,6 +26,7 @@ const allowedOrigins = [
   'http://localhost:3001', 
   'https://frontend-five-ashy-41.vercel.app',
   'https://frontend-p0y3kpelr-joshs-projects-37e0c8a8.vercel.app',
+  'https://frontend-43qftfcgo-joshs-projects-37e0c8a8.vercel.app',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
