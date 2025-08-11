@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import './QuizMode.css'
 
+const API_BASE_URL = 'https://atlas-agent-production-4cd2.up.railway.app'
+
 function QuizMode({ region, gameState, onComplete, onBack }) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
@@ -8,40 +10,61 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
   const [score, setScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(30)
   const [isTimerActive, setIsTimerActive] = useState(true)
+  const [questions, setQuestions] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [submittingAnswer, setSubmittingAnswer] = useState(false)
+  const [answerResult, setAnswerResult] = useState(null)
 
-  // Sample questions - in a real app, these would come from your backend
-  const questions = [
-    {
-      question: "What is the capital of France?",
-      answers: ["London", "Paris", "Rome", "Berlin"],
-      correctAnswer: 1,
-      hint: "Known as the 'City of Light', home to the Eiffel Tower"
-    },
-    {
-      question: "Which river runs through London?",
-      answers: ["Seine", "Rhine", "Thames", "Danube"],
-      correctAnswer: 2,
-      hint: "This river is famous for the Tower Bridge that spans across it"
-    },
-    {
-      question: "What is the smallest country in Europe?",
-      answers: ["Monaco", "Vatican City", "San Marino", "Liechtenstein"],
-      correctAnswer: 1,
-      hint: "This country is entirely surrounded by Rome, Italy"
-    },
-    {
-      question: "Which mountain range separates Europe from Asia?",
-      answers: ["Alps", "Pyrenees", "Carpathians", "Urals"],
-      correctAnswer: 3,
-      hint: "These mountains run north-south through Russia"
-    },
-    {
-      question: "What is the currency used in most European Union countries?",
-      answers: ["Pound", "Euro", "Franc", "Mark"],
-      correctAnswer: 1,
-      hint: "Introduced in 1999, this currency replaced many national currencies"
+  // Fetch questions from backend
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`${API_BASE_URL}/api/questions/region/${region.id}`)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch questions: ${response.status}`)
+        }
+        const data = await response.json()
+        // Transform API data to match frontend expectations
+        const transformedQuestions = data.questions.map(q => ({
+          id: q.id,
+          question: q.question,
+          answers: q.options, // API uses 'options', frontend expects 'answers'
+          correctAnswer: null, // Will be determined by API call
+          hint: "Submit your answer to see the explanation",
+          difficulty: q.difficulty,
+          region: q.region
+        }))
+        setQuestions(transformedQuestions)
+        setError(null)
+      } catch (err) {
+        console.error('Error fetching questions:', err)
+        setError(err.message)
+        // Fallback questions if API fails
+        setQuestions([
+          {
+            question: "What is the capital of France?",
+            answers: ["London", "Paris", "Rome", "Berlin"],
+            correctAnswer: 1,
+            hint: "Known as the 'City of Light', home to the Eiffel Tower"
+          },
+          {
+            question: "Which river runs through London?",
+            answers: ["Seine", "Rhine", "Thames", "Danube"],
+            correctAnswer: 2,
+            hint: "This river is famous for the Tower Bridge that spans across it"
+          }
+        ])
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    if (region && region.id) {
+      fetchQuestions()
+    }
+  }, [region])
 
   // Timer effect
   useEffect(() => {
@@ -54,14 +77,56 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
     }
   }, [timeLeft, isTimerActive, showResult])
 
-  const handleAnswerSelect = (answerIndex) => {
-    setSelectedAnswer(answerIndex)
-    setShowResult(true)
-    setIsTimerActive(false)
+  const handleAnswerSelect = async (answerIndex) => {
+    if (submittingAnswer) return
     
-    const isCorrect = answerIndex === questions[currentQuestion].correctAnswer
-    if (isCorrect) {
-      setScore(score + 1)
+    setSelectedAnswer(answerIndex)
+    setIsTimerActive(false)
+    setSubmittingAnswer(true)
+    
+    try {
+      const currentQ = questions[currentQuestion]
+      const selectedAnswerText = answerIndex !== null ? currentQ.answers[answerIndex] : null
+      
+      const response = await fetch(`${API_BASE_URL}/api/questions/answer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          questionId: currentQ.id,
+          answer: selectedAnswerText
+        })
+      })
+      
+      if (!response.ok) {
+        throw new Error(`Failed to submit answer: ${response.status}`)
+      }
+      
+      const result = await response.json()
+      setAnswerResult(result)
+      
+      // Update score if correct
+      if (result.correct) {
+        setScore(score + 1)
+      }
+      
+      // Update the question with the correct answer for display
+      const updatedQuestions = [...questions]
+      updatedQuestions[currentQuestion].correctAnswer = currentQ.answers.indexOf(result.correctAnswer)
+      updatedQuestions[currentQuestion].hint = result.explanation
+      setQuestions(updatedQuestions)
+      
+    } catch (err) {
+      console.error('Error submitting answer:', err)
+      // Fallback behavior
+      setAnswerResult({
+        correct: false,
+        explanation: 'Error checking answer. Please try again.'
+      })
+    } finally {
+      setSubmittingAnswer(false)
+      setShowResult(true)
     }
   }
 
@@ -72,16 +137,61 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
       setShowResult(false)
       setTimeLeft(30)
       setIsTimerActive(true)
+      setAnswerResult(null)
     } else {
       // Quiz completed
       const finalScore = Math.round((score / questions.length) * 100)
-      onComplete(finalScore, region)
+      const quizData = {
+        totalQuestions: questions.length,
+        correctAnswers: score
+      }
+      onComplete(finalScore, region, quizData)
     }
   }
 
   const currentQ = questions[currentQuestion]
   const progress = ((currentQuestion + 1) / questions.length) * 100
-  const isCorrect = selectedAnswer === currentQ.correctAnswer
+  const isCorrect = answerResult ? answerResult.correct : false
+
+  if (loading) {
+    return (
+      <div className="quiz-mode">
+        <div className="quiz-header">
+          <div className="mission-info">
+            <h2>🎯 Loading Mission: {region.name}</h2>
+            <p className="loading-message">🔄 Retrieving intelligence data...</p>
+          </div>
+          <div className="quiz-controls">
+            <button className="back-btn" onClick={onBack}>
+              ← Return to Map
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || questions.length === 0) {
+    return (
+      <div className="quiz-mode">
+        <div className="quiz-header">
+          <div className="mission-info">
+            <h2>⚠️ Mission: {region.name}</h2>
+            <p className="error-message">
+              {error ? `Error: ${error}` : 'No questions available for this region'}
+              {error && <br />}
+              <em>Using fallback training questions.</em>
+            </p>
+          </div>
+          <div className="quiz-controls">
+            <button className="back-btn" onClick={onBack}>
+              ← Return to Map
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="quiz-mode">
@@ -150,8 +260,8 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
                 } ${
                   selectedAnswer === index ? 'selected' : ''
                 }`}
-                onClick={() => !showResult && handleAnswerSelect(index)}
-                disabled={showResult}
+                onClick={() => !showResult && !submittingAnswer && handleAnswerSelect(index)}
+                disabled={showResult || submittingAnswer}
               >
                 <span className="answer-letter">
                   {String.fromCharCode(65 + index)}
@@ -180,7 +290,7 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
               </div>
 
               <div className="hint-section">
-                <p><strong>Agent Intel:</strong> {currentQ.hint}</p>
+                <p><strong>Agent Intel:</strong> {answerResult ? answerResult.explanation : currentQ.hint}</p>
               </div>
 
               <button 

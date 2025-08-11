@@ -35,6 +35,7 @@ model User {
   // Relations  
   gameSessions     GameSession[]
   leaderboardEntries LeaderboardEntry[]
+  moduleProgress   ModuleProgress[]
   
   @@map("users")
   @@index([email])
@@ -63,7 +64,162 @@ model GameSession {
   @@index([userId])
 }
 
-// Questions Database
+// Regional Structure
+model Region {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  description   String   @db.Text
+  continent     String
+  difficultyLevel Int    @default(1) // 1-5 scale
+  unlockOrder   Int      @default(1)
+  isActive      Boolean  @default(true)
+  
+  // Visual/Audio assets
+  mapImage      String?
+  backgroundMusic String?
+  ambientSounds Json?    // Array of sound file URLs
+  
+  // Relations
+  countries     Country[]
+  
+  @@map("regions")
+  @@index([continent])
+  @@index([unlockOrder])
+}
+
+// Country Structure  
+model Country {
+  id            String   @id @default(cuid())
+  name          String   
+  regionId      String
+  capitalCity   String?
+  population    String?
+  languages     Json     // Array of languages
+  currency      String?
+  timeZone      String?
+  
+  // Geographic data
+  coordinates   Json?    // {lat, lng}
+  climate       String?
+  geography     String   @db.Text
+  
+  // Cultural overview
+  culturalSummary String @db.Text
+  modernContext   String @db.Text
+  
+  // Visual assets
+  flagImage     String?
+  mapImage      String?
+  photoGallery  Json?    // Array of image URLs
+  
+  // Relations
+  region        Region   @relation(fields: [regionId], references: [id])
+  learningModules LearningModule[]
+  
+  @@map("countries")
+  @@index([regionId])
+  @@index([name])
+}
+
+// Learning Module Types
+enum ModuleType {
+  GEOGRAPHY_ENVIRONMENT
+  HISTORY_CIVILIZATION  
+  CULTURE_PHILOSOPHY
+  MODERN_CONTEXT
+  INTERACTIVE_CHALLENGE
+}
+
+// Learning Modules
+model LearningModule {
+  id            String     @id @default(cuid())
+  title         String
+  type          ModuleType
+  countryId     String
+  orderIndex    Int        @default(1)
+  estimatedTime Int        @default(5) // minutes
+  
+  // Content structure
+  objectives    Json       // Learning objectives array
+  content       Json       // Rich content structure
+  resources     Json?      // Additional resources/links
+  
+  // Completion tracking
+  completionCriteria Json  // What constitutes completion
+  
+  // Relations
+  country       Country    @relation(fields: [countryId], references: [id])
+  moduleContent ModuleContent[]
+  userProgress  ModuleProgress[]
+  
+  @@map("learning_modules") 
+  @@index([countryId])
+  @@index([type])
+  @@index([orderIndex])
+}
+
+// Rich Module Content
+model ModuleContent {
+  id            String   @id @default(cuid())
+  moduleId      String
+  contentType   String   // text, image, video, audio, interactive, quiz, puzzle
+  orderIndex    Int      @default(1)
+  
+  // Content data
+  title         String?
+  content       Json     // Flexible content structure
+  metadata      Json?    // Additional metadata
+  
+  // Interactive elements
+  interactionType String? // click, drag, input, choice, etc.
+  correctAnswers  Json?   // For quiz/puzzle elements
+  hints          Json?    // Progressive hints
+  
+  // Relations
+  module        LearningModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  
+  @@map("module_content")
+  @@index([moduleId])
+  @@index([contentType])
+  @@index([orderIndex])
+}
+
+// User Progress Tracking
+model ModuleProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  moduleId      String
+  
+  // Progress data
+  status        String   @default("not_started") // not_started, in_progress, completed
+  currentStep   Int      @default(0)
+  totalSteps    Int      @default(1)
+  score         Int?     // Optional scoring
+  timeSpent     Int      @default(0) // minutes
+  
+  // Completion data
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+  lastActivity  DateTime @updatedAt
+  
+  // Performance data
+  attemptsCount Int      @default(0)
+  hintsUsed     Json?    // Array of hint indices used
+  correctAnswers Int     @default(0)
+  totalAnswers  Int      @default(0)
+  
+  // Relations
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module        LearningModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  
+  @@map("module_progress")
+  @@unique([userId, moduleId])
+  @@index([userId])
+  @@index([moduleId])
+  @@index([status])
+}
+
+// Legacy Questions (for backward compatibility)
 model Question {
   id            String   @id @default(cuid())
   question      String   @db.Text

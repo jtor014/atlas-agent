@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './WorldMap.css'
 
-function WorldMap({ gameState, onRegionSelect }) {
+function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
+  const [showLearningMode, setShowLearningMode] = useState(false)
+  const [learningRegions, setLearningRegions] = useState([])
+  const [loading, setLoading] = useState(false)
   const [hoveredRegion, setHoveredRegion] = useState(null)
 
-  const regions = [
+  // Original quiz regions
+  const quizRegions = [
     {
       id: 'western-europe',
       name: 'Western Europe',
@@ -12,9 +16,9 @@ function WorldMap({ gameState, onRegionSelect }) {
       difficulty: 'Beginner',
       description: 'Investigate reports of suspicious activities in major European capitals.',
       clue: '🗼 Intelligence suggests our target was last seen near famous landmarks in the City of Light...',
-      isUnlocked: gameState.unlockedRegions.includes('Europe'),
+      isUnlocked: gameState.unlockedRegions.includes('western-europe'),
       isCompleted: gameState.completedRegions.includes('western-europe'),
-      nextUnlock: 'Asia',
+      nextUnlock: 'eastern-europe',
       position: { top: '25%', left: '45%' },
       icon: '🏰'
     },
@@ -25,69 +29,73 @@ function WorldMap({ gameState, onRegionSelect }) {
       difficulty: 'Intermediate',
       description: 'Track down leads in the historic cities of Eastern Europe.',
       clue: '🏛️ Our sources report movement near the Red Square and ancient castles...',
-      isUnlocked: gameState.unlockedRegions.includes('Europe') && gameState.completedRegions.includes('western-europe'),
+      isUnlocked: gameState.unlockedRegions.includes('eastern-europe'),
       isCompleted: gameState.completedRegions.includes('eastern-europe'),
-      nextUnlock: 'Asia',
+      nextUnlock: 'asia',
       position: { top: '20%', left: '55%' },
       icon: '🏛️'
     },
     {
-      id: 'east-asia',
-      name: 'East Asia',
+      id: 'asia',
+      name: 'Asia',
       continent: 'Asia',
       difficulty: 'Intermediate',
-      description: 'Follow the trail to the bustling metropolises of East Asia.',
+      description: 'Follow the trail to the bustling metropolises of Asia.',
       clue: '🏯 Witnesses report sightings near ancient temples and modern skyscrapers...',
-      isUnlocked: gameState.unlockedRegions.includes('Asia'),
-      isCompleted: gameState.completedRegions.includes('east-asia'),
-      nextUnlock: 'Africa',
+      isUnlocked: gameState.unlockedRegions.includes('asia'),
+      isCompleted: gameState.completedRegions.includes('asia'),
+      nextUnlock: 'africa',
       position: { top: '30%', left: '75%' },
       icon: '🏯'
     },
     {
-      id: 'southeast-asia',
-      name: 'Southeast Asia', 
-      continent: 'Asia',
-      difficulty: 'Advanced',
-      description: 'Navigate through tropical islands and ancient kingdoms.',
-      clue: '🌺 Trail leads to temples hidden in jungles and floating markets...',
-      isUnlocked: gameState.unlockedRegions.includes('Asia') && gameState.completedRegions.includes('east-asia'),
-      isCompleted: gameState.completedRegions.includes('southeast-asia'),
-      nextUnlock: 'Africa',
-      position: { top: '45%', left: '70%' },
-      icon: '🌺'
-    },
-    {
-      id: 'north-africa',
-      name: 'North Africa',
+      id: 'africa',
+      name: 'Africa',
       continent: 'Africa',
       difficulty: 'Advanced',
       description: 'Venture into the mysteries of ancient civilizations.',
       clue: '🐪 Desert winds carry rumors of activities near the great pyramids...',
-      isUnlocked: gameState.unlockedRegions.includes('Africa'),
-      isCompleted: gameState.completedRegions.includes('north-africa'),
-      nextUnlock: 'North America',
-      position: { top: '40%', left: '50%' },
+      isUnlocked: gameState.unlockedRegions.includes('africa'),
+      isCompleted: gameState.completedRegions.includes('africa'),
+      nextUnlock: null,
+      position: { top: '45%', left: '50%' },
       icon: '🏜️'
-    },
-    {
-      id: 'sub-saharan-africa',
-      name: 'Sub-Saharan Africa',
-      continent: 'Africa',
-      difficulty: 'Expert',
-      description: 'Explore the diverse landscapes of southern Africa.',
-      clue: '🦁 Safari guides report unusual activity near wildlife reserves...',
-      isUnlocked: gameState.unlockedRegions.includes('Africa') && gameState.completedRegions.includes('north-africa'),
-      isCompleted: gameState.completedRegions.includes('sub-saharan-africa'),
-      nextUnlock: 'North America',
-      position: { top: '60%', left: '52%' },
-      icon: '🦁'
     }
   ]
 
+  // Fetch learning regions from API
+  useEffect(() => {
+    if (showLearningMode) {
+      fetchLearningRegions()
+    }
+  }, [showLearningMode])
+
+  const fetchLearningRegions = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3003'}/api/learning/regions`)
+      if (response.ok) {
+        const data = await response.json()
+        setLearningRegions(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch learning regions:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleRegionClick = (region) => {
-    if (region.isUnlocked) {
-      onRegionSelect(region)
+    if (showLearningMode) {
+      // In learning mode, show countries for exploration
+      if (region.countries && region.countries.length > 0) {
+        onCountrySelect(region.countries[0].id) // Select first country for now
+      }
+    } else {
+      // Original quiz mode
+      if (region.isUnlocked) {
+        onRegionSelect(region)
+      }
     }
   }
 
@@ -99,19 +107,36 @@ function WorldMap({ gameState, onRegionSelect }) {
     return className
   }
 
+  const currentRegions = showLearningMode ? learningRegions : quizRegions
   const completedCount = gameState.completedRegions.length
-  const unlockedCount = regions.filter(r => r.isUnlocked).length
-  const progressPercentage = Math.round((completedCount / regions.length) * 100)
+  const unlockedCount = currentRegions.filter(r => showLearningMode || r.isUnlocked).length
+  const progressPercentage = Math.round((completedCount / currentRegions.length) * 100)
 
   return (
     <div className="world-map">
       <div className="map-header">
-        <h2>🌍 Global Operations Center</h2>
+        <div className="header-top">
+          <h2>🌍 {showLearningMode ? 'Educational Exploration Center' : 'Global Operations Center'}</h2>
+          <div className="mode-toggle">
+            <button 
+              className={`mode-btn ${!showLearningMode ? 'active' : ''}`}
+              onClick={() => setShowLearningMode(false)}
+            >
+              🕵️ Agent Mode
+            </button>
+            <button 
+              className={`mode-btn ${showLearningMode ? 'active' : ''}`}
+              onClick={() => setShowLearningMode(true)}
+            >
+              📚 Learning Mode
+            </button>
+          </div>
+        </div>
         <div className="mission-status">
           <div className="progress-stats">
             <div className="stat">
               <span className="stat-label">Regions Completed:</span>
-              <span className="stat-value">{completedCount}/{regions.length}</span>
+              <span className="stat-value">{completedCount}/{currentRegions.length}</span>
             </div>
             <div className="stat">
               <span className="stat-label">Mission Progress:</span>
@@ -151,32 +176,42 @@ function WorldMap({ gameState, onRegionSelect }) {
           </svg>
 
           {/* Region markers */}
-          {regions.map((region) => (
-            <div
-              key={region.id}
-              className={getRegionClassName(region)}
-              style={{
-                position: 'absolute',
-                top: region.position.top,
-                left: region.position.left,
-                transform: 'translate(-50%, -50%)'
-              }}
-              onClick={() => handleRegionClick(region)}
-              onMouseEnter={() => setHoveredRegion(region)}
-              onMouseLeave={() => setHoveredRegion(null)}
-            >
-              <div className="region-icon">{region.icon}</div>
-              <div className="region-label">{region.name}</div>
-              
-              {region.isCompleted && (
-                <div className="completion-badge">✅</div>
-              )}
-              
-              {!region.isUnlocked && (
-                <div className="lock-icon">🔒</div>
-              )}
-            </div>
-          ))}
+          {loading && showLearningMode ? (
+            <div className="loading-regions">Loading educational content...</div>
+          ) : (
+            currentRegions.map((region) => (
+              <div
+                key={region.id}
+                className={getRegionClassName(region)}
+                style={{
+                  position: 'absolute',
+                  top: showLearningMode ? (region.continent === 'Europe' ? '25%' : '35%') : region.position?.top,
+                  left: showLearningMode ? (region.continent === 'Europe' ? '50%' : '70%') : region.position?.left,
+                  transform: 'translate(-50%, -50%)'
+                }}
+                onClick={() => handleRegionClick(region)}
+                onMouseEnter={() => setHoveredRegion(region)}
+                onMouseLeave={() => setHoveredRegion(null)}
+              >
+                <div className="region-icon">
+                  {showLearningMode ? '🎓' : (region.icon || '🌍')}
+                </div>
+                <div className="region-label">{region.name}</div>
+                
+                {region.isCompleted && (
+                  <div className="completion-badge">✅</div>
+                )}
+                
+                {!showLearningMode && !region.isUnlocked && (
+                  <div className="lock-icon">🔒</div>
+                )}
+
+                {showLearningMode && region.countries && (
+                  <div className="country-count">{region.countries.length} countries</div>
+                )}
+              </div>
+            ))
+          )}
         </div>
 
         {/* Region tooltip */}

@@ -39,6 +39,17 @@
   align-items: center;
 }
 
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.auth-section {
+  display: flex;
+  align-items: center;
+}
+
 .game-title {
   display: flex;
   align-items: center;

@@ -11,6 +11,7 @@ import gameRoutes from './routes/game.js';
 import questionRoutes from './routes/questions.js';
 import leaderboardRoutes from './routes/leaderboard.js';
 import authRoutes from './routes/auth.js';
+import learningRoutes from './routes/learning.js';
 
 dotenv.config();
 
@@ -87,6 +88,7 @@ app.get('/health', (req, res) => {
 app.use('/api/game', gameRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/learning', learningRoutes);
 app.use('/auth', authRoutes);
 
 // Root endpoint
@@ -98,7 +100,8 @@ app.get('/', (req, res) => {
       health: '/health',
       game: '/api/game',
       questions: '/api/questions',
-      leaderboard: '/api/leaderboard'
+      leaderboard: '/api/leaderboard',
+      learning: '/api/learning'
     }
   });
 });
