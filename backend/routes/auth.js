@@ -10,7 +10,7 @@ const router = express.Router();
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/auth/google/callback"
+  callbackURL: "https://atlas-agent-production-4cd2.up.railway.app/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     // Check if user exists
