@@ -81,10 +81,11 @@ router.get('/google/callback',
       );
 
       // Redirect to frontend with token
-      const frontendUrl = process.env.FRONTEND_URL || 'https://frontend-five-ashy-41.vercel.app';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://frontend-p0y3kpelr-joshs-projects-37e0c8a8.vercel.app';
       res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
     } catch (error) {
       console.error('Callback error:', error);
+      const frontendUrl = process.env.FRONTEND_URL || 'https://frontend-p0y3kpelr-joshs-projects-37e0c8a8.vercel.app';
       res.redirect(`${frontendUrl}/auth/error`);
     }
   }
