@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import './WorldMap.css'
 
 function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
-  const [showLearningMode, setShowLearningMode] = useState(false)
-  const [learningRegions, setLearningRegions] = useState([])
   const [loading, setLoading] = useState(false)
   const [hoveredRegion, setHoveredRegion] = useState(null)
 
@@ -63,39 +61,11 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
     }
   ]
 
-  // Fetch learning regions from API
-  useEffect(() => {
-    if (showLearningMode) {
-      fetchLearningRegions()
-    }
-  }, [showLearningMode])
-
-  const fetchLearningRegions = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3003'}/api/learning/regions`)
-      if (response.ok) {
-        const data = await response.json()
-        setLearningRegions(data)
-      }
-    } catch (error) {
-      console.error('Failed to fetch learning regions:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleRegionClick = (region) => {
-    if (showLearningMode) {
-      // In learning mode, show countries for exploration
-      if (region.countries && region.countries.length > 0) {
-        onCountrySelect(region.countries[0].id) // Select first country for now
-      }
-    } else {
-      // Original quiz mode
-      if (region.isUnlocked) {
-        onRegionSelect(region)
-      }
+    // AI-powered mission mode
+    if (region.isUnlocked) {
+      onRegionSelect(region)
     }
   }
 
@@ -107,30 +77,16 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
     return className
   }
 
-  const currentRegions = showLearningMode ? learningRegions : quizRegions
+  const currentRegions = quizRegions
   const completedCount = gameState.completedRegions.length
-  const unlockedCount = currentRegions.filter(r => showLearningMode || r.isUnlocked).length
+  const unlockedCount = currentRegions.filter(r => r.isUnlocked).length
   const progressPercentage = Math.round((completedCount / currentRegions.length) * 100)
 
   return (
     <div className="world-map">
       <div className="map-header">
         <div className="header-top">
-          <h2>🌍 {showLearningMode ? 'Educational Exploration Center' : 'Global Operations Center'}</h2>
-          <div className="mode-toggle">
-            <button 
-              className={`mode-btn ${!showLearningMode ? 'active' : ''}`}
-              onClick={() => setShowLearningMode(false)}
-            >
-              🕵️ Agent Mode
-            </button>
-            <button 
-              className={`mode-btn ${showLearningMode ? 'active' : ''}`}
-              onClick={() => setShowLearningMode(true)}
-            >
-              📚 Learning Mode
-            </button>
-          </div>
+          <h2>🌍 Global Operations Center</h2>
         </div>
         <div className="mission-status">
           <div className="progress-stats">
@@ -176,42 +132,34 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
           </svg>
 
           {/* Region markers */}
-          {loading && showLearningMode ? (
-            <div className="loading-regions">Loading educational content...</div>
-          ) : (
-            currentRegions.map((region) => (
-              <div
-                key={region.id}
-                className={getRegionClassName(region)}
-                style={{
-                  position: 'absolute',
-                  top: showLearningMode ? (region.continent === 'Europe' ? '25%' : '35%') : region.position?.top,
-                  left: showLearningMode ? (region.continent === 'Europe' ? '50%' : '70%') : region.position?.left,
-                  transform: 'translate(-50%, -50%)'
-                }}
-                onClick={() => handleRegionClick(region)}
-                onMouseEnter={() => setHoveredRegion(region)}
-                onMouseLeave={() => setHoveredRegion(null)}
-              >
-                <div className="region-icon">
-                  {showLearningMode ? '🎓' : (region.icon || '🌍')}
-                </div>
-                <div className="region-label">{region.name}</div>
-                
-                {region.isCompleted && (
-                  <div className="completion-badge">✅</div>
-                )}
-                
-                {!showLearningMode && !region.isUnlocked && (
-                  <div className="lock-icon">🔒</div>
-                )}
-
-                {showLearningMode && region.countries && (
-                  <div className="country-count">{region.countries.length} countries</div>
-                )}
+          {currentRegions.map((region) => (
+            <div
+              key={region.id}
+              className={getRegionClassName(region)}
+              style={{
+                position: 'absolute',
+                top: region.position?.top,
+                left: region.position?.left,
+                transform: 'translate(-50%, -50%)'
+              }}
+              onClick={() => handleRegionClick(region)}
+              onMouseEnter={() => setHoveredRegion(region)}
+              onMouseLeave={() => setHoveredRegion(null)}
+            >
+              <div className="region-icon">
+                {region.icon || '🌍'}
               </div>
-            ))
-          )}
+              <div className="region-label">{region.name}</div>
+              
+              {region.isCompleted && (
+                <div className="completion-badge">✅</div>
+              )}
+              
+              {!region.isUnlocked && (
+                <div className="lock-icon">🔒</div>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* Region tooltip */}

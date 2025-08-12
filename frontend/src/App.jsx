@@ -3,6 +3,7 @@ import './App.css'
 import WelcomeScreen from './components/WelcomeScreen'
 import WorldMap from './components/WorldMap'
 import QuizMode from './components/QuizMode'
+import AIQuizMode from './components/AIQuizMode'
 import UserProfile from './components/UserProfile'
 import MissionBriefing from './components/MissionBriefing'
 import MissionDebrief from './components/MissionDebrief'
@@ -13,6 +14,7 @@ function GameApp() {
   const [selectedRegion, setSelectedRegion] = useState(null)
   const [lastMissionScore, setLastMissionScore] = useState(0)
   const [showProfile, setShowProfile] = useState(false)
+  // AI mode is now the default and only mode
   const { user, isAuthenticated, saveProgress } = useAuth()
   
   const [gameState, setGameState] = useState({
@@ -21,7 +23,9 @@ function GameApp() {
     completedRegions: [],
     unlockedRegions: ['western-europe'],
     currentMission: null,
-    agentLevel: 'Trainee'
+    agentLevel: 'Trainee',
+    sessionId: `session_${Date.now()}`,
+    userId: null
   })
 
   const handleStartGame = (agentName) => {
@@ -33,7 +37,8 @@ function GameApp() {
     setSelectedRegion(region)
     setGameState(prev => ({ 
       ...prev, 
-      currentMission: `Investigate suspicious activity in ${region.name}` 
+      currentMission: `Intelligence Operation in ${region.name}`,
+      userId: user?.id || null
     }))
     setCurrentScreen('briefing')
   }
@@ -105,7 +110,7 @@ function GameApp() {
         )
       case 'quiz':
         return (
-          <QuizMode 
+          <AIQuizMode 
             region={selectedRegion}
             gameState={gameState}
             onComplete={handleQuizComplete}
