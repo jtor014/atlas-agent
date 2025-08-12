@@ -36,6 +36,7 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
 
   // Initialize with first AI-generated question
   useEffect(() => {
+    console.log('🤖 Initializing AI Quiz Mode for region:', region?.id);
     initializeAIQuiz();
   }, [region]);
 
@@ -97,6 +98,8 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
       }
 
       const data = await response.json();
+      
+      console.log('🎯 Generated AI Question:', data.question.substring(0, 50) + '...');
       
       // Update AI statistics
       setAiStats(prev => ({
@@ -242,8 +245,28 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
       setAnswerResult(null);
       startTimer();
     } else {
-      // Fallback: complete the quiz if AI generation fails
-      completeQuiz();
+      console.error('❌ AI question generation failed, retrying...');
+      // Retry once with simpler parameters
+      const retryQuestion = await generateAIQuestion({
+        region: region.id,
+        category: 'Geography & Environment', // Fallback to basic category
+        difficulty: 'medium' // Fallback to medium difficulty
+      });
+      
+      if (retryQuestion) {
+        const updatedQuestions = [...questions];
+        updatedQuestions.push(retryQuestion);
+        setQuestions(updatedQuestions);
+        setCurrentQuestion(nextQuestionIndex);
+        setSelectedAnswer(null);
+        setShowResult(false);
+        setAnswerResult(null);
+        startTimer();
+      } else {
+        // Final fallback: complete the quiz
+        console.error('💥 AI generation completely failed');
+        completeQuiz();
+      }
     }
   };
 
