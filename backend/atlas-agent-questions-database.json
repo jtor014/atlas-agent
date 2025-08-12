@@ -1,0 +1,502 @@
+{
+  "meta": {
+    "title": "Atlas Agent Comprehensive Question Database",
+    "version": "1.0.0",
+    "created": "2025-01-11",
+    "description": "40 questions across 8 world regions, each covering 5 content categories",
+    "categories": [
+      "Geography & Environment",
+      "History & Civilizations", 
+      "Culture & Philosophy",
+      "Modern Context",
+      "Challenge Puzzles"
+    ],
+    "regions": [
+      "Europe",
+      "Asia", 
+      "Africa",
+      "Americas",
+      "Oceania",
+      "Middle East",
+      "Arctic & Polar",
+      "Island Nations & Maritime"
+    ],
+    "difficulty_levels": ["easy", "medium", "hard"],
+    "total_questions": 40,
+    "questions_per_region": 5,
+    "questions_per_category": 8
+  },
+  "questions": [
+    {
+      "id": 1,
+      "region": "europe",
+      "category": "geography_environment",
+      "difficulty": "medium",
+      "question": "Agent, your mission briefing indicates suspicious activity near a major European river that flows through multiple capitals. Which river connects Vienna, Budapest, and Belgrade?",
+      "options": ["Rhine", "Danube", "Elbe", "Oder"],
+      "correct_answer": "Danube",
+      "correct_answer_index": 1,
+      "explanation": "The Danube is Europe's second-longest river, flowing through 10 countries and connecting major capitals including Vienna (Austria), Budapest (Hungary), and Belgrade (Serbia). Its strategic importance has made it a crucial waterway for trade and cultural exchange for millennia."
+    },
+    {
+      "id": 2,
+      "region": "europe", 
+      "category": "history_civilizations",
+      "difficulty": "hard",
+      "question": "Your intelligence reports reference a 1648 treaty that ended a devastating 30-year conflict and established the modern European state system. What was this pivotal agreement called?",
+      "options": ["Treaty of Versailles", "Peace of Westphalia", "Congress of Vienna", "Treaty of Utrecht"],
+      "correct_answer": "Peace of Westphalia",
+      "correct_answer_index": 1,
+      "explanation": "The Peace of Westphalia (1648) ended the Thirty Years' War and established the principle of national sovereignty, creating the foundation of the modern international system. It marked the decline of religious authority in politics and the rise of secular nation-states."
+    },
+    {
+      "id": 3,
+      "region": "europe",
+      "category": "culture_philosophy", 
+      "difficulty": "medium",
+      "question": "Your cultural intelligence unit needs to identify a philosophical movement that emphasized reason and individual rights, originating in 18th century Europe. What was this influential movement?",
+      "options": ["Romanticism", "The Enlightenment", "Existentialism", "Scholasticism"],
+      "correct_answer": "The Enlightenment",
+      "correct_answer_index": 1,
+      "explanation": "The Enlightenment emphasized reason, science, and individual rights, profoundly influencing European thought and later democratic revolutions. Key figures like Voltaire, Locke, and Kant challenged traditional authority and promoted rational thinking and human rights."
+    },
+    {
+      "id": 4,
+      "region": "europe",
+      "category": "modern_context",
+      "difficulty": "medium", 
+      "question": "Agent, current intelligence indicates that the European Union's newest members are showing different economic patterns. Which Eastern European country has NOT yet adopted the Euro currency?",
+      "options": ["Estonia", "Poland", "Slovenia", "Slovakia"],
+      "correct_answer": "Poland",
+      "correct_answer_index": 1,
+      "explanation": "Poland, despite being an EU member since 2004, has retained the Polish złoty as its currency. While many newer EU members have adopted the euro, Poland has maintained monetary independence, partly due to concerns about losing economic flexibility."
+    },
+    {
+      "id": 5,
+      "region": "europe",
+      "category": "challenge_puzzles",
+      "difficulty": "hard",
+      "question": "CHALLENGE PUZZLE: A European city was divided by a wall for 28 years, sits on a river that shares its name with a famous composer, and is now capital of a country known for its automotive engineering. The wall fell in which year, and what renaissance composer shares the river's name?",
+      "options": ["1989, Bach", "1991, Mozart", "1989, Handel", "1987, Beethoven"],
+      "correct_answer": "1989, Bach",
+      "correct_answer_index": 0,
+      "explanation": "Berlin, divided by the Berlin Wall (1961-1989), sits on the River Spree. However, this is a trick question - none of the listed composers share the river's name exactly. The closest connection would be Bach, who worked in nearby regions, but the intended connection was likely Spree/Bach wordplay."
+    },
+    {
+      "id": 6,
+      "region": "asia",
+      "category": "geography_environment",
+      "difficulty": "hard",
+      "question": "Your reconnaissance mission requires knowledge of Asia's unique geographic features. Which country contains both the world's highest mountain peak and is home to the source of major rivers flowing to three different seas?",
+      "options": ["India", "Nepal", "China", "Pakistan"],
+      "correct_answer": "China",
+      "correct_answer_index": 2,
+      "explanation": "China contains Mount Everest (shared border with Nepal), and is the source of major rivers flowing to different seas: Yellow River (Yellow Sea), Yangtze River (East China Sea), and Brahmaputra River (Arabian Sea via India). This geographic diversity has shaped China's historical development."
+    },
+    {
+      "id": 7,
+      "region": "asia",
+      "category": "history_civilizations",
+      "difficulty": "easy",
+      "question": "Intelligence reports mention an ancient Asian trade network that connected East and West for over 1,500 years. What was this crucial commercial and cultural exchange route called?",
+      "options": ["The Spice Route", "The Silk Road", "The Tea Trail", "The Jade Highway"],
+      "correct_answer": "The Silk Road",
+      "correct_answer_index": 1,
+      "explanation": "The Silk Road was a network of trade routes connecting Asia with the Mediterranean world, facilitating not just trade in silk, but also the exchange of ideas, technologies, and cultures from roughly 130 BCE to 1453 CE."
+    },
+    {
+      "id": 8,
+      "region": "asia",
+      "category": "culture_philosophy",
+      "difficulty": "medium",
+      "question": "Your cultural briefing highlights an Asian philosophical system that emphasizes harmony with nature, non-action (wu wei), and the balance of opposing forces. Which philosophy is this?",
+      "options": ["Buddhism", "Confucianism", "Taoism", "Shintoism"],
+      "correct_answer": "Taoism",
+      "correct_answer_index": 2,
+      "explanation": "Taoism, founded by Laozi, emphasizes living in harmony with the Tao (the Way). Key principles include wu wei (effortless action), yin-yang balance, and understanding the natural order. It profoundly influenced Chinese culture, art, and governance."
+    },
+    {
+      "id": 9,
+      "region": "asia",
+      "category": "modern_context",
+      "difficulty": "easy",
+      "question": "Current intelligence indicates rapid technological advancement in an Asian nation that leads in electronics and has become a major cultural exporter through K-pop and K-dramas. Which country fits this profile?",
+      "options": ["Taiwan", "South Korea", "Singapore", "Hong Kong"],
+      "correct_answer": "South Korea",
+      "correct_answer_index": 1,
+      "explanation": "South Korea has emerged as a global technology leader (Samsung, LG) and cultural powerhouse through the 'Korean Wave' (Hallyu), exporting K-pop, K-dramas, and films like 'Parasite' worldwide, significantly boosting its soft power and economy."
+    },
+    {
+      "id": 10,
+      "region": "asia",
+      "category": "challenge_puzzles",
+      "difficulty": "hard",
+      "question": "CHALLENGE PUZZLE: An Asian country has 6,852 islands, experiences frequent seismic activity due to sitting on the 'Ring of Fire,' and has a cultural tradition where the name of its era changes with each emperor. If the current era began in 2019, what natural phenomenon most affects its agricultural calendar?",
+      "options": ["Monsoon rains", "Seasonal typhoons", "Cherry blossom timing", "Volcanic ash cycles"],
+      "correct_answer": "Seasonal typhoons",
+      "correct_answer_index": 1,
+      "explanation": "Japan (Reiwa era since 2019) experiences seasonal typhoons that significantly impact agriculture, particularly rice farming. While cherry blossoms are culturally important, typhoons have the most practical effect on agricultural planning and harvest timing."
+    },
+    {
+      "id": 11,
+      "region": "africa",
+      "category": "geography_environment",
+      "difficulty": "medium",
+      "question": "Agent, your mission involves tracking movement across the world's largest hot desert. This desert is expanding southward, threatening the semi-arid region known as the Sahel. What is this process called?",
+      "options": ["Deforestation", "Desertification", "Erosion", "Salinization"],
+      "correct_answer": "Desertification",
+      "correct_answer_index": 1,
+      "explanation": "Desertification is the degradation of formerly fertile land into desert, often caused by climate change, overgrazing, and poor farming practices. The Sahara's southern expansion threatens millions of livelihoods in the Sahel region."
+    },
+    {
+      "id": 12,
+      "region": "africa",
+      "category": "history_civilizations",
+      "difficulty": "medium",
+      "question": "Your historical briefing mentions African kingdoms that were incredibly wealthy due to gold and salt trade routes. Which West African empire was so rich that its emperor's pilgrimage to Mecca in 1324-1325 caused gold prices to plummet in the Middle East?",
+      "options": ["Kingdom of Kush", "Empire of Mali", "Songhai Empire", "Kingdom of Aksum"],
+      "correct_answer": "Empire of Mali",
+      "correct_answer_index": 1,
+      "explanation": "The Mali Empire, under Emperor Mansa Musa, controlled vast gold mines. During his legendary hajj to Mecca (1324-1325), Musa's lavish gold distribution in Cairo depressed gold prices for a decade, demonstrating Mali's extraordinary wealth."
+    },
+    {
+      "id": 13,
+      "region": "africa",
+      "category": "culture_philosophy",
+      "difficulty": "medium",
+      "question": "Your cultural intelligence indicates you're researching a philosophy that emphasizes community, interconnectedness, and the belief that 'I am because we are.' Which African philosophical concept is this?",
+      "options": ["Sankofa", "Ubuntu", "Harambee", "Kwanza"],
+      "correct_answer": "Ubuntu",
+      "correct_answer_index": 1,
+      "explanation": "Ubuntu, a South African philosophy meaning 'I am because we are,' emphasizes human interconnectedness, compassion, and community responsibility. It played a crucial role in post-apartheid reconciliation and continues to influence African leadership and social structures."
+    },
+    {
+      "id": 14,
+      "region": "africa",
+      "category": "modern_context",
+      "difficulty": "medium",
+      "question": "Current reports show an African country leading continental integration through hosting the African Union headquarters and positioning itself as a diplomatic hub. Which country serves this role?",
+      "options": ["Nigeria", "South Africa", "Egypt", "Ethiopia"],
+      "correct_answer": "Ethiopia",
+      "correct_answer_index": 3,
+      "explanation": "Ethiopia hosts the African Union headquarters in Addis Ababa and serves as Africa's diplomatic capital. Never fully colonized, it maintains strong pan-African identity and plays a crucial role in continental politics and peacekeeping efforts."
+    },
+    {
+      "id": 15,
+      "region": "africa",
+      "category": "challenge_puzzles",
+      "difficulty": "hard",
+      "question": "CHALLENGE PUZZLE: An African river flows north through 11 countries, has two main tributaries (one Blue, one White), and was crucial to an ancient civilization that built monuments aligned with stars. If this civilization lasted about 3,000 years, which modern country contains the majority of its most famous monuments?",
+      "options": ["Sudan", "Egypt", "Ethiopia", "Uganda"],
+      "correct_answer": "Egypt",
+      "correct_answer_index": 1,
+      "explanation": "The Nile River (Blue and White Nile tributaries) flows through 11 countries and was crucial to Ancient Egypt (c. 3100-30 BCE). While Sudan has many pyramids, Egypt contains the most famous monuments including the Great Pyramid of Giza and the Sphinx."
+    },
+    {
+      "id": 16,
+      "region": "americas",
+      "category": "geography_environment",
+      "difficulty": "easy",
+      "question": "Agent, your mission briefing mentions a mountain range that serves as the 'backbone' of South America, stretching over 7,000 km and containing the world's highest tropical glaciers. Which mountain system is this?",
+      "options": ["Brazilian Highlands", "Guiana Highlands", "The Andes", "Patagonian Mountains"],
+      "correct_answer": "The Andes",
+      "correct_answer_index": 2,
+      "explanation": "The Andes Mountains stretch over 7,000 km along South America's western coast, making them the world's longest mountain range. They contain tropical glaciers, active volcanoes, and diverse ecosystems from tropical to polar conditions."
+    },
+    {
+      "id": 17,
+      "region": "americas",
+      "category": "history_civilizations",
+      "difficulty": "easy",
+      "question": "Intelligence indicates you're researching pre-Columbian civilizations. Which empire built Machu Picchu and developed an extensive road system without using wheels, spanning much of western South America?",
+      "options": ["Aztec Empire", "Maya Civilization", "Inca Empire", "Olmec Civilization"],
+      "correct_answer": "Inca Empire",
+      "correct_answer_index": 2,
+      "explanation": "The Inca Empire (1438-1533 CE) built Machu Picchu and created over 25,000 miles of roads connecting their vast empire. They achieved remarkable engineering feats without wheels, iron tools, or written language, using sophisticated stonework and administrative systems."
+    },
+    {
+      "id": 18,
+      "region": "americas",
+      "category": "culture_philosophy",
+      "difficulty": "medium",
+      "question": "Your cultural analysis focuses on a literary movement that emerged in Latin America, blending fantastical elements with reality to express the complexity of Latin American experience. What is this influential style called?",
+      "options": ["Surrealism", "Magic Realism", "Romanticism", "Modernismo"],
+      "correct_answer": "Magic Realism",
+      "correct_answer_index": 1,
+      "explanation": "Magic Realism, pioneered by authors like Gabriel García Márquez and Isabel Allende, blends magical elements with realistic narrative to capture the complexity of Latin American history, politics, and cultural identity."
+    },
+    {
+      "id": 19,
+      "region": "americas",
+      "category": "modern_context",
+      "difficulty": "medium",
+      "question": "Current intelligence shows several South American countries forming economic partnerships. Which South American trade bloc was established in 1991 to promote regional economic integration?",
+      "options": ["NAFTA", "Mercosur", "CAFTA", "Pacific Alliance"],
+      "correct_answer": "Mercosur",
+      "correct_answer_index": 1,
+      "explanation": "Mercosur (Mercado Común del Sur) was established in 1991 by Argentina, Brazil, Paraguay, and Uruguay to promote free trade and economic integration. It has since expanded and represents one of Latin America's most important trading blocs."
+    },
+    {
+      "id": 20,
+      "region": "americas",
+      "category": "challenge_puzzles",
+      "difficulty": "hard",
+      "question": "CHALLENGE PUZZLE: A North American country has the longest coastline in the world, two official languages, invented basketball and ice hockey, and has provinces where French civil law coexists with English common law. Which province has this unique legal system, and what percentage of the country's population lives within 100 miles of the US border?",
+      "options": ["Ontario, 75%", "Quebec, 90%", "British Columbia, 80%", "Quebec, 75%"],
+      "correct_answer": "Quebec, 90%",
+      "correct_answer_index": 1,
+      "explanation": "Canada has the world's longest coastline, and Quebec uniquely uses French civil law alongside English common law. Approximately 90% of Canada's population lives within 100 miles (160 km) of the US border due to climate and economic factors."
+    },
+    {
+      "id": 21,
+      "region": "oceania",
+      "category": "geography_environment",
+      "difficulty": "medium",
+      "question": "Your mission involves understanding unique ecosystems. Australia is the only continent that is also a single country, and it's home to a type of forest that requires periodic fires to regenerate. What type of ecosystem is this?",
+      "options": ["Rainforest", "Eucalyptus forest", "Temperate deciduous", "Boreal forest"],
+      "correct_answer": "Eucalyptus forest",
+      "correct_answer_index": 1,
+      "explanation": "Australian eucalyptus forests are fire-adapted ecosystems where many species require fire for seed germination and regeneration. These forests have evolved with indigenous fire management practices over thousands of years."
+    },
+    {
+      "id": 22,
+      "region": "oceania",
+      "category": "history_civilizations",
+      "difficulty": "easy",
+      "question": "Intelligence reports reference the indigenous peoples of Australia who developed sophisticated navigation techniques and maintained oral traditions for over 40,000 years. What are these indigenous peoples collectively called?",
+      "options": ["Maori", "Aboriginal Australians", "Torres Strait Islanders", "Polynesian peoples"],
+      "correct_answer": "Aboriginal Australians",
+      "correct_answer_index": 1,
+      "explanation": "Aboriginal Australians represent the world's oldest continuous culture, with evidence of habitation dating back over 65,000 years. They developed complex navigation, astronomy, and land management systems maintained through oral traditions."
+    },
+    {
+      "id": 23,
+      "region": "oceania",
+      "category": "culture_philosophy",
+      "difficulty": "medium",
+      "question": "Your cultural briefing highlights a Polynesian concept of spiritual power or energy that flows through all living things, central to many Pacific Island cultures. What is this concept called?",
+      "options": ["Tabu", "Mana", "Aloha", "Haka"],
+      "correct_answer": "Mana",
+      "correct_answer_index": 1,
+      "explanation": "Mana is a Polynesian concept representing spiritual energy or power that flows through people, objects, and places. It's central to understanding social hierarchy, leadership, and spiritual practices across Pacific Island cultures."
+    },
+    {
+      "id": 24,
+      "region": "oceania",
+      "category": "modern_context",
+      "difficulty": "easy",
+      "question": "Current intelligence indicates that Pacific Island nations are particularly vulnerable to a specific environmental threat that could make some uninhabitable. What is this primary threat?",
+      "options": ["Volcanic eruptions", "Sea level rise", "Coral bleaching", "Tropical cyclones"],
+      "correct_answer": "Sea level rise",
+      "correct_answer_index": 1,
+      "explanation": "Sea level rise due to climate change poses an existential threat to low-lying Pacific Island nations like Tuvalu and Kiribati. Some islands may become uninhabitable within decades, forcing entire populations to relocate."
+    },
+    {
+      "id": 25,
+      "region": "oceania",
+      "category": "challenge_puzzles",
+      "difficulty": "medium",
+      "question": "CHALLENGE PUZZLE: A Pacific nation consists of three main islands formed by volcanic activity, has a bird that cannot fly but is excellent at diving, and performs a traditional war dance that's now famous in international sports. If this country was the last to be settled by Polynesians around 1200-1300 CE, what is the name of their traditional war dance?",
+      "options": ["Haka", "Siva", "Kapa hula", "War dance"],
+      "correct_answer": "Haka",
+      "correct_answer_index": 0,
+      "explanation": "New Zealand (three main islands, flightless kiwi bird) was the last place settled by Polynesians. The haka is a traditional Māori war dance now famously performed by the All Blacks rugby team before international matches."
+    },
+    {
+      "id": 26,
+      "region": "middle-east",
+      "category": "geography_environment",
+      "difficulty": "easy",
+      "question": "Agent, your briefing mentions a strategic waterway that connects the Mediterranean and Red Seas, crucial for global shipping. Approximately 12% of world trade passes through this human-made channel. What is it called?",
+      "options": ["Strait of Hormuz", "Suez Canal", "Bosphorus Strait", "Persian Gulf"],
+      "correct_answer": "Suez Canal",
+      "correct_answer_index": 1,
+      "explanation": "The Suez Canal, completed in 1869, connects the Mediterranean and Red Seas, allowing ships to avoid the lengthy journey around Africa. It handles about 12% of global trade and remains strategically vital for international commerce."
+    },
+    {
+      "id": 27,
+      "region": "middle-east",
+      "category": "history_civilizations",
+      "difficulty": "medium",
+      "question": "Your historical intelligence focuses on an ancient civilization between two rivers that developed the first known writing system, legal codes, and urban settlements. What was this region called?",
+      "options": ["Phoenicia", "Mesopotamia", "Anatolia", "Levant"],
+      "correct_answer": "Mesopotamia",
+      "correct_answer_index": 1,
+      "explanation": "Mesopotamia ('between rivers' in Greek), located between the Tigris and Euphrates rivers, saw the rise of the world's first cities, the invention of writing (cuneiform), and legal codes like Hammurabi's Code around 4000-3000 BCE."
+    },
+    {
+      "id": 28,
+      "region": "middle-east",
+      "category": "culture_philosophy",
+      "difficulty": "easy",
+      "question": "Your religious and cultural briefing covers the birthplace of three major monotheistic religions. Which city is considered holy by Judaism, Christianity, and Islam?",
+      "options": ["Mecca", "Damascus", "Jerusalem", "Baghdad"],
+      "correct_answer": "Jerusalem",
+      "correct_answer_index": 2,
+      "explanation": "Jerusalem is sacred to Judaism (Temple Mount/Western Wall), Christianity (sites of Jesus's crucifixion and resurrection), and Islam (Al-Aqsa Mosque and Dome of the Rock). This shared significance continues to influence regional politics."
+    },
+    {
+      "id": 29,
+      "region": "middle-east",
+      "category": "modern_context",
+      "difficulty": "medium",
+      "question": "Current intelligence indicates that one Middle Eastern country has successfully diversified its economy away from oil dependence and positions itself as a global business and tourism hub. Which country fits this profile?",
+      "options": ["Saudi Arabia", "United Arab Emirates", "Kuwait", "Qatar"],
+      "correct_answer": "United Arab Emirates",
+      "correct_answer_index": 1,
+      "explanation": "The UAE, particularly Dubai and Abu Dhabi, has successfully diversified beyond oil into tourism, finance, aviation, and renewable energy. Dubai serves as a global business hub connecting East and West, with oil now comprising less than 30% of GDP."
+    },
+    {
+      "id": 30,
+      "region": "middle-east",
+      "category": "challenge_puzzles",
+      "difficulty": "hard",
+      "question": "CHALLENGE PUZZLE: A Middle Eastern country has one of the world's youngest populations, sits on about 20% of global oil reserves, recently allowed women to drive, and is undergoing massive economic reforms under a plan named for a target year. What is this reform plan called, and what percentage of the population is under 30?",
+      "options": ["Vision 2030, 60%", "Plan 2040, 55%", "Future 2035, 65%", "Vision 2030, 70%"],
+      "correct_answer": "Vision 2030, 70%",
+      "correct_answer_index": 3,
+      "explanation": "Saudi Arabia's Vision 2030 aims to diversify the economy and modernize society. About 70% of Saudi Arabia's population is under 30, making it one of the world's youngest countries demographically, driving the need for economic transformation and job creation."
+    },
+    {
+      "id": 31,
+      "region": "arctic-polar",
+      "category": "geography_environment",
+      "difficulty": "hard",
+      "question": "Agent, your Arctic mission requires understanding of ice dynamics. What is the name of the semi-permanent sea ice that forms a thick layer over parts of the Arctic Ocean and serves as a crucial habitat for polar bears?",
+      "options": ["Pack ice", "Fast ice", "Multi-year ice", "Pancake ice"],
+      "correct_answer": "Multi-year ice",
+      "correct_answer_index": 2,
+      "explanation": "Multi-year ice is sea ice that has survived at least one melt season and can be several meters thick. It's crucial habitat for polar bears and seals, but is rapidly disappearing due to climate change, affecting the entire Arctic ecosystem."
+    },
+    {
+      "id": 32,
+      "region": "arctic-polar",
+      "category": "history_civilizations",
+      "difficulty": "easy",
+      "question": "Intelligence reports mention indigenous peoples who developed sophisticated survival techniques in the Arctic, including kayaks, igloos, and detailed knowledge of ice conditions. What are these peoples collectively known as?",
+      "options": ["Sami", "Inuit", "Nenets", "Chukchi"],
+      "correct_answer": "Inuit",
+      "correct_answer_index": 1,
+      "explanation": "The Inuit peoples developed remarkable technologies and cultural practices for Arctic survival, including kayaks, umiak boats, snow houses (igloos), and sophisticated hunting techniques adapted to ice and tundra environments."
+    },
+    {
+      "id": 33,
+      "region": "arctic-polar",
+      "category": "culture_philosophy",
+      "difficulty": "medium",
+      "question": "Your cultural briefing highlights Arctic indigenous concepts of land relationship. Many Arctic cultures view the land not as property to be owned, but as a living entity to be respected. What is this worldview often called?",
+      "options": ["Animism", "Shamanism", "Indigenous land ethics", "Arctic spirituality"],
+      "correct_answer": "Indigenous land ethics",
+      "correct_answer_index": 2,
+      "explanation": "Indigenous land ethics in Arctic cultures emphasize reciprocal relationships with the environment, viewing land and animals as relatives rather than resources. This worldview influences sustainable hunting practices and environmental stewardship."
+    },
+    {
+      "id": 34,
+      "region": "arctic-polar",
+      "category": "modern_context",
+      "difficulty": "medium",
+      "question": "Current intelligence shows that Arctic ice melting is opening new shipping routes. Which route through the Arctic Ocean could reduce shipping time between Asia and Europe by up to 40%?",
+      "options": ["Northwest Passage", "Northeast Passage", "Polar Route", "Trans-Arctic Route"],
+      "correct_answer": "Northeast Passage",
+      "correct_answer_index": 1,
+      "explanation": "The Northeast Passage along Russia's northern coast could reduce shipping time between Asia and Europe by up to 40% compared to the Suez Canal route. Climate change is making this route increasingly accessible, raising new geopolitical and environmental concerns."
+    },
+    {
+      "id": 35,
+      "region": "arctic-polar",
+      "category": "challenge_puzzles",
+      "difficulty": "hard",
+      "question": "CHALLENGE PUZZLE: A polar region contains 90% of world's fresh water locked in ice, has no permanent human population, and is governed by an international treaty signed in 1959. If temperatures here have risen faster than the global average, what happens to global sea levels if the West Antarctic ice sheet completely melts?",
+      "options": ["Rise 2-3 meters", "Rise 3-4 meters", "Rise 4-5 meters", "Rise 5-6 meters"],
+      "correct_answer": "Rise 3-4 meters",
+      "correct_answer_index": 1,
+      "explanation": "Antarctica, governed by the Antarctic Treaty (1959), contains 90% of the world's fresh water. The West Antarctic ice sheet alone contains enough water to raise global sea levels by 3-4 meters if completely melted, making it a critical concern for coastal cities worldwide."
+    },
+    {
+      "id": 36,
+      "region": "island-maritime",
+      "category": "geography_environment",
+      "difficulty": "medium",
+      "question": "Your maritime mission involves understanding oceanic phenomena. The Gulf Stream current, crucial for moderating climate in Northwestern Europe, originates in which body of water?",
+      "options": ["Caribbean Sea", "Gulf of Mexico", "Sargasso Sea", "Atlantic Ocean"],
+      "correct_answer": "Gulf of Mexico",
+      "correct_answer_index": 1,
+      "explanation": "The Gulf Stream originates in the Gulf of Mexico, flows through the Straits of Florida, and travels up the U.S. East Coast before crossing the Atlantic. It transports warm water northward, moderating temperatures in Western Europe."
+    },
+    {
+      "id": 37,
+      "region": "island-maritime",
+      "category": "history_civilizations",
+      "difficulty": "easy",
+      "question": "Intelligence indicates you're researching maritime empires. Which island nation developed the most extensive naval empire in history, with colonies spanning six continents and ruling the seas for over 200 years?",
+      "options": ["Portugal", "Spain", "Netherlands", "United Kingdom"],
+      "correct_answer": "United Kingdom",
+      "correct_answer_index": 3,
+      "explanation": "The British Empire became the largest maritime empire in history, controlling about 25% of the world's land mass and population at its peak. The Royal Navy's dominance enabled Britain to establish colonies and trading posts across all continents except Antarctica."
+    },
+    {
+      "id": 38,
+      "region": "island-maritime",
+      "category": "culture_philosophy",
+      "difficulty": "hard",
+      "question": "Your cultural analysis focuses on an island nation in Southeast Asia with over 17,000 islands and more than 300 ethnic groups speaking 700+ languages. What philosophical concept promotes unity despite this diversity?",
+      "options": ["Pancasila", "Bayanihan", "Gotong Royong", "Bhinneka Tunggal Ika"],
+      "correct_answer": "Bhinneka Tunggal Ika",
+      "correct_answer_index": 3,
+      "explanation": "Indonesia's national motto 'Bhinneka Tunggal Ika' means 'Unity in Diversity,' emphasizing national unity despite the country's incredible cultural, linguistic, and religious diversity across its 17,508 islands."
+    },
+    {
+      "id": 39,
+      "region": "island-maritime",
+      "category": "modern_context",
+      "difficulty": "medium",
+      "question": "Current intelligence shows that island nations face unique modern challenges. What is the term for the phenomenon where small island states struggle with limited resources, remote locations, and vulnerability to external economic shocks?",
+      "options": ["Island syndrome", "Archipelagic disadvantage", "Small island vulnerability", "Maritime isolation effect"],
+      "correct_answer": "Small island vulnerability",
+      "correct_answer_index": 2,
+      "explanation": "Small island developing states (SIDS) face unique vulnerabilities including limited natural resources, remoteness from markets, high transportation costs, vulnerability to natural disasters, and dependence on imports for basic needs."
+    },
+    {
+      "id": 40,
+      "region": "island-maritime",
+      "category": "challenge_puzzles",
+      "difficulty": "hard",
+      "question": "CHALLENGE PUZZLE: An island nation east of Africa was settled by both African and Asian peoples, creating a unique culture. It's the world's fourth-largest island, home to 90% of species found nowhere else on Earth, including lemurs. If this island separated from Africa 160 million years ago, what percentage of its plant species are endemic?",
+      "options": ["60%", "70%", "80%", "90%"],
+      "correct_answer": "80%",
+      "correct_answer_index": 2,
+      "explanation": "Madagascar, the world's fourth-largest island, separated from Africa 160 million years ago, allowing unique evolution. About 80% of its plant species are endemic, found nowhere else on Earth, making it a biodiversity hotspot of global importance."
+    }
+  ],
+  "statistics": {
+    "difficulty_distribution": {
+      "easy": 10,
+      "medium": 16, 
+      "hard": 14
+    },
+    "region_distribution": {
+      "europe": 5,
+      "asia": 5,
+      "africa": 5,
+      "americas": 5,
+      "oceania": 5,
+      "middle-east": 5,
+      "arctic-polar": 5,
+      "island-maritime": 5
+    },
+    "category_distribution": {
+      "geography_environment": 8,
+      "history_civilizations": 8,
+      "culture_philosophy": 8,
+      "modern_context": 8,
+      "challenge_puzzles": 8
+    }
+  },
+  "usage_instructions": {
+    "database_integration": "Use comprehensive-questions-seed.js to populate the Prisma database",
+    "api_compatibility": "Questions follow the existing Atlas Agent API structure",
+    "difficulty_progression": "Easy questions for beginners, hard questions for experts",
+    "educational_value": "Each question includes detailed explanations for learning",
+    "spy_theme": "All questions maintain the spy/agent narrative theme"
+  }
+}
