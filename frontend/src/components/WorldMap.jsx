@@ -167,6 +167,14 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
           <h2>🌍 Global Operations Center</h2>
         </div>
         <div className="mission-status">
+          {gameState.generatingNarrative && (
+            <div className="narrative-generation">
+              <span className="generation-icon">🤖</span>
+              <span className="generation-text">AI is generating your unique mission storyline...</span>
+            </div>
+          )}
+        </div>
+        <div className="mission-status">
           <div className="progress-stats">
             <div className="stat">
               <span className="stat-label">Regions Completed:</span>

@@ -19,19 +19,77 @@ function GameApp() {
   // AI mode is now the default and only mode
   const { user, isAuthenticated, saveProgress, updateUserAge } = useAuth()
   
+  // Available starting regions (beginner level)
+  const startingRegions = ['western-europe', 'eastern-europe'];
+  
+  // Generate randomized mission sequence
+  const generateRandomMissionSequence = () => {
+    // All regions with their difficulty levels
+    const allRegions = [
+      { id: 'western-europe', difficulty: 'beginner' },
+      { id: 'eastern-europe', difficulty: 'beginner' },
+      { id: 'north-america', difficulty: 'intermediate' },
+      { id: 'south-america', difficulty: 'intermediate' },
+      { id: 'east-asia', difficulty: 'intermediate' },
+      { id: 'southeast-asia', difficulty: 'advanced' },
+      { id: 'south-asia', difficulty: 'advanced' },
+      { id: 'central-west-asia', difficulty: 'advanced' },
+      { id: 'africa', difficulty: 'expert' },
+      { id: 'oceania', difficulty: 'expert' }
+    ];
+    
+    // Group by difficulty to ensure progression
+    const beginner = allRegions.filter(r => r.difficulty === 'beginner');
+    const intermediate = allRegions.filter(r => r.difficulty === 'intermediate');
+    const advanced = allRegions.filter(r => r.difficulty === 'advanced');
+    const expert = allRegions.filter(r => r.difficulty === 'expert');
+    
+    // Shuffle each group
+    const shuffleArray = (array) => {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    };
+    
+    // Create randomized sequence while maintaining difficulty progression
+    const sequence = [
+      ...shuffleArray(beginner),
+      ...shuffleArray(intermediate), 
+      ...shuffleArray(advanced),
+      ...shuffleArray(expert)
+    ];
+    
+    return sequence.map(r => r.id);
+  };
+  
+  // Generate initial random starting region
+  const getRandomStartingRegion = () => {
+    return startingRegions[Math.floor(Math.random() * startingRegions.length)];
+  };
+  
   const [gameState, setGameState] = useState({
     agentName: '',
     score: 0,
     completedRegions: [],
-    unlockedRegions: ['western-europe'],
+    unlockedRegions: [getRandomStartingRegion()],
+    missionSequence: generateRandomMissionSequence(),
     currentMission: null,
     agentLevel: 'Trainee',
     sessionId: null,
-    userId: null
+    userId: null,
+    aiNarrative: null,
+    generatingNarrative: false
   })
 
   const handleStartGame = async (agentName) => {
     try {
+      // Generate new randomized sequence for this game
+      const newMissionSequence = generateRandomMissionSequence();
+      const newStartingRegion = getRandomStartingRegion();
+      
       // Create a new game session on the backend
       const response = await fetch('https://atlas-agent-production-4cd2.up.railway.app/api/game/start', {
         method: 'POST',
@@ -39,36 +97,89 @@ function GameApp() {
         body: JSON.stringify({ agentName })
       })
 
+      let sessionId;
       if (response.ok) {
         const data = await response.json()
-        setGameState(prev => ({ 
-          ...prev, 
-          agentName,
-          sessionId: data.sessionId,
-          userId: user?.id || null
-        }))
-        setCurrentScreen('worldmap')
+        sessionId = data.sessionId;
       } else {
-        // Fallback to local session if backend fails
         console.warn('Failed to create backend session, using local session')
-        setGameState(prev => ({ 
-          ...prev, 
-          agentName,
-          sessionId: `local_${Date.now()}`,
-          userId: user?.id || null
-        }))
-        setCurrentScreen('worldmap')
+        sessionId = `local_${Date.now()}`;
       }
-    } catch (error) {
-      console.error('Error creating game session:', error)
-      // Fallback to local session
+      
+      // Update game state with new randomized setup
       setGameState(prev => ({ 
         ...prev, 
         agentName,
-        sessionId: `local_${Date.now()}`,
-        userId: user?.id || null
-      }))
+        sessionId,
+        userId: user?.id || null,
+        unlockedRegions: [newStartingRegion],
+        missionSequence: newMissionSequence,
+        generatingNarrative: true
+      }));
+      
+      // Generate AI narrative asynchronously
+      generateAINarrative(agentName, newStartingRegion, newMissionSequence, sessionId);
+      
       setCurrentScreen('worldmap')
+      
+    } catch (error) {
+      console.error('Error creating game session:', error)
+      // Fallback to local session
+      const newMissionSequence = generateRandomMissionSequence();
+      const newStartingRegion = getRandomStartingRegion();
+      const sessionId = `local_${Date.now()}`;
+      
+      setGameState(prev => ({ 
+        ...prev, 
+        agentName,
+        sessionId,
+        userId: user?.id || null,
+        unlockedRegions: [newStartingRegion],
+        missionSequence: newMissionSequence,
+        generatingNarrative: true
+      }));
+      
+      generateAINarrative(agentName, newStartingRegion, newMissionSequence, sessionId);
+      setCurrentScreen('worldmap')
+    }
+  }
+  
+  const generateAINarrative = async (agentName, startingRegion, missionSequence, sessionId) => {
+    try {
+      const userAge = user?.age || localStorage.getItem('atlas_user_age');
+      
+      const response = await fetch('https://atlas-agent-production-4cd2.up.railway.app/api/ai/generate-mission-narrative', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agentName,
+          startingRegion,
+          missionSequence,
+          userAge: userAge ? parseInt(userAge) : null,
+          sessionId
+        })
+      });
+      
+      if (response.ok) {
+        const narrativeData = await response.json();
+        setGameState(prev => ({
+          ...prev,
+          aiNarrative: narrativeData.narrative,
+          generatingNarrative: false
+        }));
+      } else {
+        console.warn('Failed to generate AI narrative, using default');
+        setGameState(prev => ({
+          ...prev,
+          generatingNarrative: false
+        }));
+      }
+    } catch (error) {
+      console.error('Error generating AI narrative:', error);
+      setGameState(prev => ({
+        ...prev,
+        generatingNarrative: false
+      }));
     }
   }
 
@@ -87,11 +198,17 @@ function GameApp() {
   }
 
   const handleQuizComplete = async (score, region, quizData) => {
+    // Determine next region from randomized sequence
+    const currentIndex = gameState.missionSequence.indexOf(region.id);
+    const nextRegionId = currentIndex >= 0 && currentIndex < gameState.missionSequence.length - 1 
+      ? gameState.missionSequence[currentIndex + 1] 
+      : null;
+    
     const newGameState = {
       ...gameState,
       score: gameState.score + score * 10,
       completedRegions: [...gameState.completedRegions, region.id],
-      unlockedRegions: score >= 70 ? [...gameState.unlockedRegions, region.nextUnlock] : gameState.unlockedRegions,
+      unlockedRegions: score >= 70 && nextRegionId ? [...gameState.unlockedRegions, nextRegionId] : gameState.unlockedRegions,
       agentLevel: getNewAgentLevel([...gameState.completedRegions, region.id].length)
     }
     

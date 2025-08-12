@@ -239,7 +239,35 @@ function MissionBriefing({ region, gameState, onStartMission, onBack }) {
     }
   };
 
-  const currentMission = missionData[region.id] || missionData['western-europe'];
+  // Use AI-generated narrative if available, otherwise fall back to default
+  const getAIEnhancedMission = () => {
+    const defaultMission = missionData[region.id] || missionData['western-europe'];
+    
+    if (gameState.aiNarrative && gameState.aiNarrative.regional_narratives && gameState.aiNarrative.regional_narratives[region.id]) {
+      const aiRegion = gameState.aiNarrative.regional_narratives[region.id];
+      return {
+        ...defaultMission,
+        title: aiRegion.operation_name || defaultMission.title,
+        threat_level: aiRegion.threat_level || defaultMission.threat_level,
+        briefing: [
+          `Agent ${gameState.agentName}, ${aiRegion.local_plot}`,
+          aiRegion.connection_to_overall || defaultMission.briefing[1],
+          `Intelligence Target: ${aiRegion.intelligence_target}`,
+          defaultMission.briefing[defaultMission.briefing.length - 1] // Keep final warning/motivation
+        ],
+        contacts: aiRegion.local_contacts || defaultMission.contacts,
+        // Keep other properties from default
+        objectives: defaultMission.objectives,
+        equipment: defaultMission.equipment,
+        time_limit: defaultMission.time_limit,
+        success_criteria: defaultMission.success_criteria
+      };
+    }
+    
+    return defaultMission;
+  };
+
+  const currentMission = getAIEnhancedMission();
 
   const nextStep = () => {
     if (briefingStep < currentMission.briefing.length - 1) {

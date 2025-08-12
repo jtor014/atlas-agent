@@ -67,9 +67,9 @@
   flex-direction: column;
   padding: 2rem;
   gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
   width: 100%;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .agent-status {
@@ -77,11 +77,12 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .agent-avatar {
@@ -231,16 +232,19 @@
 }
 
 .briefing-controls {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
   padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
   position: sticky;
   bottom: 0;
-  z-index: 10;
+  z-index: 100;
   margin-top: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .control-btn {
