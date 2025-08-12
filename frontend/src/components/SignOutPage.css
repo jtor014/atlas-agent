@@ -1,0 +1,280 @@
+.signout-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.signout-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+.signout-container {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 16px;
+  padding: 3rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 50px rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.signout-header {
+  margin-bottom: 2.5rem;
+}
+
+.signout-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+.signout-container h1 {
+  color: #f1f5f9;
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.signout-subtitle {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.signout-content {
+  margin-bottom: 2.5rem;
+}
+
+.mission-summary {
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.mission-summary h2 {
+  color: #3b82f6;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  gap: 0.5rem;
+}
+
+.status-icon {
+  font-size: 1rem;
+}
+
+.signout-message {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.signout-message h3 {
+  color: #f1f5f9;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.signout-message p {
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.signout-message ul {
+  color: #94a3b8;
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.signout-message li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.auto-redirect {
+  background: rgba(147, 51, 234, 0.05);
+  border: 1px solid rgba(147, 51, 234, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.auto-redirect p {
+  color: #c4b5fd;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.countdown-bar {
+  background: rgba(147, 51, 234, 0.2);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.countdown-fill {
+  background: linear-gradient(90deg, #9333ea, #c084fc);
+  height: 100%;
+  transition: width 1s linear;
+  border-radius: 4px;
+}
+
+.signout-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.primary-btn, .secondary-btn {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.primary-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.secondary-btn {
+  background: rgba(100, 116, 139, 0.1);
+  color: #cbd5e1;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.secondary-btn:hover {
+  background: rgba(100, 116, 139, 0.2);
+  color: #f1f5f9;
+  border-color: rgba(100, 116, 139, 0.5);
+}
+
+.signout-footer {
+  border-top: 1px solid rgba(100, 116, 139, 0.2);
+  padding-top: 1.5rem;
+  color: #64748b;
+}
+
+.signout-footer p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.footer-divider {
+  color: rgba(100, 116, 139, 0.5);
+  margin: 1rem 0;
+  letter-spacing: 0.5rem;
+}
+
+.atlas-branding {
+  font-weight: 600;
+  color: #94a3b8 !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .signout-page {
+    padding: 1rem;
+  }
+  
+  .signout-container {
+    padding: 2rem;
+  }
+  
+  .signout-container h1 {
+    font-size: 1.875rem;
+  }
+  
+  .status-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .signout-actions {
+    flex-direction: column;
+  }
+  
+  .primary-btn, .secondary-btn {
+    min-width: auto;
+  }
+}
+
+/* Loading animation for initial render */
+.signout-container {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

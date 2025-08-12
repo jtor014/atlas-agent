@@ -7,6 +7,7 @@ import AIQuizMode from './components/AIQuizMode'
 import UserProfile from './components/UserProfile'
 import MissionBriefing from './components/MissionBriefing'
 import MissionDebrief from './components/MissionDebrief'
+import SignOutPage from './components/SignOutPage'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 
 function GameApp() {
@@ -143,6 +144,18 @@ function GameApp() {
     setCurrentScreen('worldmap')
   }
 
+  const handleLogout = async () => {
+    setCurrentScreen('signout')
+  }
+
+  const handleBackToGame = () => {
+    setCurrentScreen('welcome')
+  }
+
+  const handleStaySignedOut = () => {
+    setCurrentScreen('welcome')
+  }
+
   const renderCurrentScreen = () => {
     switch(currentScreen) {
       case 'welcome':
@@ -181,6 +194,13 @@ function GameApp() {
             onReturnToHQ={handleReturnToHQ}
           />
         )
+      case 'signout':
+        return (
+          <SignOutPage
+            onBackToGame={handleBackToGame}
+            onStaySignedOut={handleStaySignedOut}
+          />
+        )
       default:
         return <WelcomeScreen onStartGame={handleStartGame} />
     }
@@ -203,7 +223,7 @@ function GameApp() {
               </div>
             )}
             <div className="auth-section">
-              <UserProfile onClose={() => setShowProfile(!showProfile)} showFull={false} />
+              <UserProfile onClose={() => setShowProfile(!showProfile)} showFull={false} onLogout={handleLogout} />
             </div>
           </div>
         </div>
@@ -214,7 +234,7 @@ function GameApp() {
       </main>
       
       {showProfile && (
-        <UserProfile onClose={() => setShowProfile(false)} showFull={true} />
+        <UserProfile onClose={() => setShowProfile(false)} showFull={true} onLogout={handleLogout} />
       )}
     </div>
   )

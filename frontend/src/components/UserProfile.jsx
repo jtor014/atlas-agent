@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import './UserProfile.css';
 
-function UserProfile({ onClose, showFull = false }) {
+function UserProfile({ onClose, showFull = false, onLogout }) {
   const { user, isAuthenticated, login, logout } = useAuth();
 
   if (!showFull && !isAuthenticated) {
@@ -92,7 +92,11 @@ function UserProfile({ onClose, showFull = false }) {
         </div>
 
         <div className="profile-actions">
-          <button className="logout-btn" onClick={logout}>
+          <button className="logout-btn" onClick={async () => {
+            await logout(); // Clear auth state
+            onClose(); // Close profile modal
+            if (onLogout) onLogout(); // Show sign-out page
+          }}>
             Sign Out
           </button>
         </div>
