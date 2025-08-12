@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './QuizMode.css';
+import { getRandomFallbackQuestion } from '../data/fallbackQuestions';
 
 const API_BASE_URL = 'https://atlas-agent-production-4cd2.up.railway.app';
 
@@ -68,7 +69,9 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
         setCurrentQuestion(0);
         startTimer();
       } else {
-        throw new Error('Failed to generate initial question');
+        // This should never happen now with fallback system
+        console.error('❌ Critical: Both AI and fallback systems failed');
+        setError('Unable to load questions. Please refresh and try again.');
       }
 
     } catch (err) {
@@ -131,14 +134,49 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
 
     } catch (error) {
       console.error('AI question generation error:', error);
-      return null;
+      console.log('🔄 Falling back to offline questions...');
+      
+      // Use fallback question when AI fails
+      const fallbackQuestion = getRandomFallbackQuestion(params.region, params.difficulty);
+      
+      return {
+        id: `fallback_${Date.now()}`,
+        question: fallbackQuestion.question,
+        answers: fallbackQuestion.options,
+        correctAnswer: fallbackQuestion.correctAnswer,
+        hint: fallbackQuestion.hint,
+        explanation: fallbackQuestion.explanation,
+        difficulty: fallbackQuestion.difficulty,
+        region: params.region,
+        category: fallbackQuestion.category,
+        spy_context: `Intelligence mission in ${params.region}`,
+        educational_value: fallbackQuestion.explanation,
+        ai_generated: false,
+        is_fallback: true
+      };
     } finally {
       setGeneratingNext(false);
     }
   };
 
   const startTimer = () => {
-    setTimeLeft(30);
+    // Age-adaptive timer - younger users get more time
+    const userAge = localStorage.getItem('atlas_user_age');
+    let timerSeconds = 30; // default
+    
+    if (userAge) {
+      const age = parseInt(userAge);
+      if (age <= 10) {
+        timerSeconds = 45; // Elementary: more time
+      } else if (age <= 12) {
+        timerSeconds = 40; // Middle school: slightly more time
+      } else if (age <= 14) {
+        timerSeconds = 35; // Early high school: a bit more time
+      }
+      // 15+ uses default 30 seconds
+    }
+    
+    setTimeLeft(timerSeconds);
     setIsTimerActive(true);
   };
 
@@ -384,8 +422,19 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
                 className={`answer-button ${selectedAnswer === index ? 'selected' : ''}`}
                 onClick={() => handleAnswerSelect(index)}
                 disabled={selectedAnswer !== null || submittingAnswer}
+                aria-label={`Option ${String.fromCharCode(65 + index)}: ${answer}`}
+                aria-pressed={selectedAnswer === index}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (selectedAnswer === null && !submittingAnswer) {
+                      handleAnswerSelect(index);
+                    }
+                  }
+                }}
               >
-                <span className="answer-letter">{String.fromCharCode(65 + index)}</span>
+                <span className="answer-letter" aria-hidden="true">{String.fromCharCode(65 + index)}</span>
                 <span className="answer-text">{answer}</span>
               </button>
             ))}

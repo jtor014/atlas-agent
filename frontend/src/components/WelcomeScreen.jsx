@@ -7,6 +7,8 @@ function WelcomeScreen({ onStartGame }) {
 
   const handleStartMission = () => {
     if (agentName.trim()) {
+      // Mark that user wants to start playing (triggers age onboarding if needed)
+      localStorage.setItem('atlas_has_started_game', 'true');
       onStartGame(agentName.trim())
     }
   }

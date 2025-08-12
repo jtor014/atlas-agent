@@ -286,15 +286,17 @@ function GameApp() {
     setCurrentScreen('welcome')
   }
 
-  // Check if we need to show age onboarding
+  // Check if we need to show age onboarding  
   const shouldShowAgeOnboarding = () => {
-    // Show age onboarding if:
-    // 1. User is authenticated but has no age, OR
-    // 2. User is not authenticated and hasn't seen age onboarding yet
+    // Only show age onboarding when user is about to start playing (after seeing welcome)
     const hasSeenAgeOnboarding = localStorage.getItem('atlas_age_onboarding_completed');
     const localAge = localStorage.getItem('atlas_user_age');
+    const hasStartedGame = localStorage.getItem('atlas_has_started_game');
     
     if (currentScreen !== 'welcome') return false;
+    
+    // Only show if user has indicated intent to play but hasn't set age
+    if (!hasStartedGame) return false;
     
     if (isAuthenticated && user) {
       return !user.age;
