@@ -151,6 +151,69 @@ router.get('/sessions', async (req, res) => {
   }
 });
 
+// Record answer for game session
+router.post('/answer', async (req, res) => {
+  try {
+    const { 
+      sessionId, 
+      questionId, 
+      selectedAnswer, 
+      isCorrect, 
+      pointsEarned, 
+      timeSpent,
+      aiGenerated = false 
+    } = req.body;
+
+    if (!sessionId) {
+      return res.status(400).json({
+        error: 'Session ID is required'
+      });
+    }
+
+    // Verify session exists
+    const session = await prisma.gameSession.findUnique({
+      where: { id: sessionId }
+    });
+
+    if (!session) {
+      return res.status(404).json({
+        error: 'Game session not found'
+      });
+    }
+
+    // Record the answer
+    const answer = await prisma.answer.create({
+      data: {
+        sessionId,
+        questionId: questionId || `ai_${Date.now()}`, // Handle AI-generated questions
+        selectedAnswer,
+        isCorrect,
+        pointsEarned: pointsEarned || 0
+      }
+    });
+
+    // Update session score and activity
+    const updatedSession = await prisma.gameSession.update({
+      where: { id: sessionId },
+      data: {
+        score: {
+          increment: pointsEarned || 0
+        }
+      }
+    });
+
+    res.json({
+      message: 'Answer recorded successfully',
+      answerId: answer.id,
+      sessionScore: updatedSession.score
+    });
+
+  } catch (error) {
+    console.error('Error recording answer:', error);
+    res.status(500).json({ error: 'Failed to record answer' });
+  }
+});
+
 // Delete game session
 router.delete('/session/:sessionId', async (req, res) => {
   try {
