@@ -228,6 +228,7 @@ model Question {
   difficulty    String   // easy, medium, hard
   region        String
   createdAt     DateTime @default(now())
+  metadata      Json?    // AI generation metadata
   
   // Relations
   answers       Answer[]
