@@ -24,13 +24,50 @@ function GameApp() {
     unlockedRegions: ['western-europe'],
     currentMission: null,
     agentLevel: 'Trainee',
-    sessionId: `session_${Date.now()}`,
+    sessionId: null,
     userId: null
   })
 
-  const handleStartGame = (agentName) => {
-    setGameState(prev => ({ ...prev, agentName }))
-    setCurrentScreen('worldmap')
+  const handleStartGame = async (agentName) => {
+    try {
+      // Create a new game session on the backend
+      const response = await fetch('https://atlas-agent-production-4cd2.up.railway.app/api/game/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agentName })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setGameState(prev => ({ 
+          ...prev, 
+          agentName,
+          sessionId: data.sessionId,
+          userId: user?.id || null
+        }))
+        setCurrentScreen('worldmap')
+      } else {
+        // Fallback to local session if backend fails
+        console.warn('Failed to create backend session, using local session')
+        setGameState(prev => ({ 
+          ...prev, 
+          agentName,
+          sessionId: `local_${Date.now()}`,
+          userId: user?.id || null
+        }))
+        setCurrentScreen('worldmap')
+      }
+    } catch (error) {
+      console.error('Error creating game session:', error)
+      // Fallback to local session
+      setGameState(prev => ({ 
+        ...prev, 
+        agentName,
+        sessionId: `local_${Date.now()}`,
+        userId: user?.id || null
+      }))
+      setCurrentScreen('worldmap')
+    }
   }
 
   const handleRegionSelect = (region) => {
@@ -59,7 +96,25 @@ function GameApp() {
     setGameState(newGameState)
     setLastMissionScore(score)
     
-    // Save progress to backend if user is logged in
+    // Save progress to backend game session if sessionId exists
+    if (gameState.sessionId && !gameState.sessionId.startsWith('local_')) {
+      try {
+        await fetch(`https://atlas-agent-production-4cd2.up.railway.app/api/game/progress/${gameState.sessionId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            score: newGameState.score,
+            completedRegions: newGameState.completedRegions,
+            unlockedRegions: newGameState.unlockedRegions,
+            agentLevel: newGameState.agentLevel
+          })
+        })
+      } catch (error) {
+        console.error('Failed to save game progress:', error)
+      }
+    }
+    
+    // Save progress to user profile if user is logged in
     if (isAuthenticated && user) {
       const progressData = {
         score: newGameState.score,
