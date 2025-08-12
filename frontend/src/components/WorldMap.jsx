@@ -5,7 +5,7 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
   const [loading, setLoading] = useState(false)
   const [hoveredRegion, setHoveredRegion] = useState(null)
 
-  // Original quiz regions
+  // Expanded global regions for comprehensive coverage
   const quizRegions = [
     {
       id: 'western-europe',
@@ -24,40 +24,118 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       id: 'eastern-europe',
       name: 'Eastern Europe',
       continent: 'Europe', 
-      difficulty: 'Intermediate',
+      difficulty: 'Beginner',
       description: 'Track down leads in the historic cities of Eastern Europe.',
       clue: '🏛️ Our sources report movement near the Red Square and ancient castles...',
       isUnlocked: gameState.unlockedRegions.includes('eastern-europe'),
       isCompleted: gameState.completedRegions.includes('eastern-europe'),
-      nextUnlock: 'asia',
+      nextUnlock: 'north-america',
       position: { top: '20%', left: '55%' },
       icon: '🏛️'
     },
     {
-      id: 'asia',
-      name: 'Asia',
+      id: 'north-america',
+      name: 'North America',
+      continent: 'North America',
+      difficulty: 'Intermediate',
+      description: 'Pursue leads across the vast landscapes of North America.',
+      clue: '🗽 Reports indicate movement from the Statue of Liberty to Hollywood signs...',
+      isUnlocked: gameState.unlockedRegions.includes('north-america'),
+      isCompleted: gameState.completedRegions.includes('north-america'),
+      nextUnlock: 'south-america',
+      position: { top: '30%', left: '20%' },
+      icon: '🗽'
+    },
+    {
+      id: 'south-america',
+      name: 'South America',
+      continent: 'South America',
+      difficulty: 'Intermediate',
+      description: 'Navigate the diverse terrains from Amazon rainforest to Andes mountains.',
+      clue: '⛰️ Witnesses spotted activity near Christ the Redeemer and ancient Inca ruins...',
+      isUnlocked: gameState.unlockedRegions.includes('south-america'),
+      isCompleted: gameState.completedRegions.includes('south-america'),
+      nextUnlock: 'east-asia',
+      position: { top: '55%', left: '25%' },
+      icon: '⛰️'
+    },
+    {
+      id: 'east-asia',
+      name: 'East Asia',
       continent: 'Asia',
       difficulty: 'Intermediate',
-      description: 'Follow the trail to the bustling metropolises of Asia.',
-      clue: '🏯 Witnesses report sightings near ancient temples and modern skyscrapers...',
-      isUnlocked: gameState.unlockedRegions.includes('asia'),
-      isCompleted: gameState.completedRegions.includes('asia'),
-      nextUnlock: 'africa',
-      position: { top: '30%', left: '75%' },
+      description: 'Decode ancient wisdom and modern technology in East Asia.',
+      clue: '🏯 Activity reported from Tokyo skyscrapers to the Great Wall of China...',
+      isUnlocked: gameState.unlockedRegions.includes('east-asia'),
+      isCompleted: gameState.completedRegions.includes('east-asia'),
+      nextUnlock: 'southeast-asia',
+      position: { top: '25%', left: '75%' },
       icon: '🏯'
+    },
+    {
+      id: 'southeast-asia',
+      name: 'Southeast Asia',
+      continent: 'Asia',
+      difficulty: 'Advanced',
+      description: 'Navigate the tropical archipelagos and bustling trade routes.',
+      clue: '🌺 Intelligence gathered from temples of Angkor to Singapore skylines...',
+      isUnlocked: gameState.unlockedRegions.includes('southeast-asia'),
+      isCompleted: gameState.completedRegions.includes('southeast-asia'),
+      nextUnlock: 'south-asia',
+      position: { top: '40%', left: '70%' },
+      icon: '🌺'
+    },
+    {
+      id: 'south-asia',
+      name: 'South Asia',
+      continent: 'Asia',
+      difficulty: 'Advanced',
+      description: 'Uncover secrets from the Himalayas to the Indian Ocean.',
+      clue: '🕌 Trail leads from the Taj Mahal to Buddhist monasteries in the mountains...',
+      isUnlocked: gameState.unlockedRegions.includes('south-asia'),
+      isCompleted: gameState.completedRegions.includes('south-asia'),
+      nextUnlock: 'central-west-asia',
+      position: { top: '35%', left: '65%' },
+      icon: '🕌'
+    },
+    {
+      id: 'central-west-asia',
+      name: 'Central & West Asia',
+      continent: 'Asia',
+      difficulty: 'Advanced',
+      description: 'Navigate the crossroads of civilizations and oil-rich territories.',
+      clue: '🏛️ Movement detected from Persian ruins to modern Dubai towers...',
+      isUnlocked: gameState.unlockedRegions.includes('central-west-asia'),
+      isCompleted: gameState.completedRegions.includes('central-west-asia'),
+      nextUnlock: 'africa',
+      position: { top: '30%', left: '60%' },
+      icon: '🏛️'
     },
     {
       id: 'africa',
       name: 'Africa',
       continent: 'Africa',
-      difficulty: 'Advanced',
-      description: 'Venture into the mysteries of ancient civilizations.',
-      clue: '🐪 Desert winds carry rumors of activities near the great pyramids...',
+      difficulty: 'Expert',
+      description: 'Venture into the cradle of civilization and untamed wilderness.',
+      clue: '🐪 Desert winds carry rumors of activities from pyramids to Victoria Falls...',
       isUnlocked: gameState.unlockedRegions.includes('africa'),
       isCompleted: gameState.completedRegions.includes('africa'),
-      nextUnlock: null,
+      nextUnlock: 'oceania',
       position: { top: '45%', left: '50%' },
       icon: '🏜️'
+    },
+    {
+      id: 'oceania',
+      name: 'Oceania',
+      continent: 'Oceania',
+      difficulty: 'Expert',
+      description: 'The final frontier across Pacific islands and Australian outback.',
+      clue: '🏄 The trail ends somewhere between Sydney Opera House and remote Pacific atolls...',
+      isUnlocked: gameState.unlockedRegions.includes('oceania'),
+      isCompleted: gameState.completedRegions.includes('oceania'),
+      nextUnlock: null,
+      position: { top: '55%', left: '80%' },
+      icon: '🏄'
     }
   ]
 
