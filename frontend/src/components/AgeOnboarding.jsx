@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import './AgeOnboarding.css';
 
 function AgeOnboarding({ onComplete, onSkip }) {
   const [age, setAge] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { updateUserAge } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,22 +21,19 @@ function AgeOnboarding({ onComplete, onSkip }) {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('atlas_token');
-      const response = await fetch('https://atlas-agent-production-4cd2.up.railway.app/auth/age', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ age: ageNum })
-      });
-
-      if (response.ok) {
-        onComplete(ageNum);
-      } else {
-        const data = await response.json();
-        setError(data.error || 'Failed to save age');
+      // Store age locally for immediate use
+      localStorage.setItem('atlas_user_age', ageNum.toString());
+      
+      // Try to update user age if authenticated
+      if (updateUserAge) {
+        const success = await updateUserAge(ageNum);
+        if (!success) {
+          console.warn('Failed to save age to server, but continuing with local storage');
+        }
       }
+      
+      // Always complete successfully (local storage is sufficient)
+      onComplete(ageNum);
     } catch (error) {
       console.error('Age update error:', error);
       setError('Network error. Please try again.');

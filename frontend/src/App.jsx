@@ -159,17 +159,31 @@ function GameApp() {
 
   const handleAgeComplete = (age) => {
     // Age has been set via the AgeOnboarding component
+    localStorage.setItem('atlas_age_onboarding_completed', 'true');
     setCurrentScreen('welcome')
   }
 
   const handleAgeSkip = () => {
     // User skipped age setup, continue without age
+    localStorage.setItem('atlas_age_onboarding_completed', 'true');
     setCurrentScreen('welcome')
   }
 
   // Check if we need to show age onboarding
   const shouldShowAgeOnboarding = () => {
-    return isAuthenticated && user && !user.age && currentScreen === 'welcome'
+    // Show age onboarding if:
+    // 1. User is authenticated but has no age, OR
+    // 2. User is not authenticated and hasn't seen age onboarding yet
+    const hasSeenAgeOnboarding = localStorage.getItem('atlas_age_onboarding_completed');
+    const localAge = localStorage.getItem('atlas_user_age');
+    
+    if (currentScreen !== 'welcome') return false;
+    
+    if (isAuthenticated && user) {
+      return !user.age;
+    } else {
+      return !hasSeenAgeOnboarding && !localAge;
+    }
   }
 
   const renderCurrentScreen = () => {
