@@ -18,6 +18,7 @@ model User {
   email         String   @unique
   name          String
   avatar        String?
+  age           Int?     // User's age for adaptive content
   createdAt     DateTime @default(now())
   lastLoginAt   DateTime @updatedAt
   

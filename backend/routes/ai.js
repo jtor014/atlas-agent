@@ -138,6 +138,7 @@ router.post('/generate-question', async (req, res) => {
     
     // Get player profile if available
     let playerProfile = {};
+    let userAge = null;
     if (userId) {
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -146,10 +147,12 @@ router.post('/generate-question', async (req, res) => {
           completedRegions: true,
           totalScore: true,
           correctAnswers: true,
-          totalQuestions: true
+          totalQuestions: true,
+          age: true
         }
       });
       playerProfile = user || {};
+      userAge = user?.age || null;
     }
 
     // Generate AI question
@@ -158,7 +161,8 @@ router.post('/generate-question', async (req, res) => {
       category,
       baseDifficulty: difficulty,
       playerProfile,
-      performanceContext
+      performanceContext,
+      userAge
     });
 
     // Store generated question in database for tracking

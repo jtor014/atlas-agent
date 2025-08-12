@@ -117,6 +117,33 @@ export const AuthProvider = ({ children }) => {
     return false;
   };
 
+  const updateUserAge = async (age) => {
+    if (!token || !user) return false;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/age`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ age })
+      });
+
+      if (response.ok) {
+        // Update user with new age
+        setUser(prev => ({
+          ...prev,
+          age: age
+        }));
+        return true;
+      }
+    } catch (error) {
+      console.error('Failed to update age:', error);
+    }
+    return false;
+  };
+
   const value = {
     user,
     loading,
@@ -124,6 +151,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     saveProgress,
+    updateUserAge,
     token
   };
 

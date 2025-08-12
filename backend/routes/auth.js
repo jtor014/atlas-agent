@@ -101,6 +101,7 @@ router.get('/me', authenticateToken, async (req, res) => {
         name: true,
         email: true,
         avatar: true,
+        age: true,
         totalScore: true,
         agentLevel: true,
         completedRegions: true,
@@ -125,6 +126,33 @@ router.get('/me', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Failed to fetch user data' });
+  }
+});
+
+// Update user age (for new users)
+router.post('/age', authenticateToken, async (req, res) => {
+  try {
+    const { age } = req.body;
+
+    if (!age || age < 8 || age > 100) {
+      return res.status(400).json({ error: 'Please provide a valid age between 8 and 100' });
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.user.userId },
+      data: { age: parseInt(age) }
+    });
+
+    res.json({ 
+      message: 'Age updated successfully',
+      user: {
+        id: user.id,
+        age: user.age
+      }
+    });
+  } catch (error) {
+    console.error('Update age error:', error);
+    res.status(500).json({ error: 'Failed to update age' });
   }
 });
 

@@ -47,7 +47,7 @@ class AIQuestionGenerator {
   }
 
   /**
-   * Generate adaptive questions based on player performance
+   * Generate adaptive questions based on player performance and age
    */
   async generateAdaptiveQuestion(params) {
     const {
@@ -55,13 +55,17 @@ class AIQuestionGenerator {
       category,
       baseDifficulty = 'medium',
       playerProfile = {},
-      performanceContext = {}
+      performanceContext = {},
+      userAge = null
     } = params;
 
     try {
+      // Calculate age-appropriate base difficulty
+      const ageAdjustedDifficulty = this.calculateAgeAppropriateDifficulty(userAge, baseDifficulty);
+      
       // Analyze player performance to adjust difficulty
       const adjustedDifficulty = this.calculateAdaptiveDifficulty(
-        baseDifficulty, 
+        ageAdjustedDifficulty, 
         performanceContext
       );
 
@@ -117,6 +121,38 @@ class AIQuestionGenerator {
   }
 
   /**
+   * Calculate age-appropriate difficulty level
+   */
+  calculateAgeAppropriateDifficulty(userAge, requestedDifficulty) {
+    if (!userAge) return requestedDifficulty;
+
+    // Age-based difficulty mapping
+    let maxDifficulty;
+    if (userAge <= 10) {
+      maxDifficulty = 'beginner';
+    } else if (userAge <= 12) {
+      maxDifficulty = 'easy';
+    } else if (userAge <= 14) {
+      maxDifficulty = 'medium';
+    } else if (userAge <= 16) {
+      maxDifficulty = 'hard';
+    } else {
+      maxDifficulty = 'expert';
+    }
+
+    // Ensure requested difficulty doesn't exceed age-appropriate level
+    const difficultyLevels = ['beginner', 'easy', 'medium', 'hard', 'expert'];
+    const requestedIndex = difficultyLevels.indexOf(requestedDifficulty);
+    const maxIndex = difficultyLevels.indexOf(maxDifficulty);
+    
+    if (requestedIndex > maxIndex) {
+      return maxDifficulty;
+    }
+    
+    return requestedDifficulty;
+  }
+
+  /**
    * Calculate adaptive difficulty based on player performance
    */
   calculateAdaptiveDifficulty(baseDifficulty, performanceContext) {
@@ -149,11 +185,66 @@ class AIQuestionGenerator {
   }
 
   /**
+   * Get age-appropriate language and content guidance
+   */
+  getAgeAppropriateGuidance(userAge) {
+    if (!userAge) return '';
+
+    if (userAge <= 10) {
+      return `
+AGE-APPROPRIATE CONTENT (Ages 8-10):
+- Use simple, clear language that elementary students can understand
+- Focus on basic facts and observable features
+- Include visual descriptions and concrete examples
+- Avoid complex historical conflicts or sensitive political topics
+- Make content engaging with adventure themes but keep it lighthearted
+- Use familiar comparisons (size of a football field, number of classrooms, etc.)`;
+    } else if (userAge <= 12) {
+      return `
+AGE-APPROPRIATE CONTENT (Ages 11-12):
+- Use intermediate vocabulary suitable for middle school students
+- Include more detailed explanations but keep them accessible
+- Can introduce basic historical concepts and cultural differences
+- Avoid graphic historical events or complex political situations
+- Include interesting facts that spark curiosity
+- Connect to things they might learn in school geography and history classes`;
+    } else if (userAge <= 14) {
+      return `
+AGE-APPROPRIATE CONTENT (Ages 13-14):
+- Use more sophisticated vocabulary and concepts
+- Can include historical events and cultural analysis
+- Introduce some political and economic concepts appropriately
+- Avoid overly sensitive or controversial topics
+- Focus on educational value while maintaining engagement
+- Can include more complex geographical and cultural relationships`;
+    } else if (userAge <= 16) {
+      return `
+AGE-APPROPRIATE CONTENT (Ages 15-16):
+- Use advanced vocabulary and complex concepts
+- Can include detailed historical analysis and political topics
+- Address cultural nuances and global relationships
+- Include some challenging analytical thinking
+- Connect to high school level geography, history, and social studies
+- Can touch on more sophisticated global issues appropriately`;
+    } else {
+      return `
+AGE-APPROPRIATE CONTENT (Ages 17+):
+- Use university-level vocabulary and concepts
+- Include complex geopolitical analysis and historical context
+- Address sophisticated cultural, economic, and political topics
+- Require critical thinking and analysis
+- Can include challenging contemporary global issues
+- Expect advanced geographical and cultural knowledge`;
+    }
+  }
+
+  /**
    * Create specialized prompt for question generation
    */
-  createPrompt({ region, category, difficulty, playerProfile, performanceContext }) {
+  createPrompt({ region, category, difficulty, playerProfile, performanceContext, userAge }) {
     const categoryGuidance = this.templates[category][difficulty.level] || 'General knowledge';
     const adjustmentGuidance = this.difficultyAdjustments[difficulty.adjustment] || '';
+    const ageGuidance = this.getAgeAppropriateGuidance(userAge);
     
     return `Create a spy-themed geography question for Atlas Agent, a game where players are secret agents gathering intelligence worldwide.
 
@@ -166,6 +257,7 @@ MISSION PARAMETERS:
 
 PLAYER INTELLIGENCE PROFILE:
 ${this.formatPlayerProfile(playerProfile, performanceContext)}
+${ageGuidance}
 
 QUESTION REQUIREMENTS:
 1. Must fit the spy/intelligence theme (agents, missions, intelligence gathering)

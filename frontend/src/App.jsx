@@ -8,6 +8,7 @@ import UserProfile from './components/UserProfile'
 import MissionBriefing from './components/MissionBriefing'
 import MissionDebrief from './components/MissionDebrief'
 import SignOutPage from './components/SignOutPage'
+import AgeOnboarding from './components/AgeOnboarding'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 
 function GameApp() {
@@ -16,7 +17,7 @@ function GameApp() {
   const [lastMissionScore, setLastMissionScore] = useState(0)
   const [showProfile, setShowProfile] = useState(false)
   // AI mode is now the default and only mode
-  const { user, isAuthenticated, saveProgress } = useAuth()
+  const { user, isAuthenticated, saveProgress, updateUserAge } = useAuth()
   
   const [gameState, setGameState] = useState({
     agentName: '',
@@ -156,7 +157,32 @@ function GameApp() {
     setCurrentScreen('welcome')
   }
 
+  const handleAgeComplete = (age) => {
+    // Age has been set via the AgeOnboarding component
+    setCurrentScreen('welcome')
+  }
+
+  const handleAgeSkip = () => {
+    // User skipped age setup, continue without age
+    setCurrentScreen('welcome')
+  }
+
+  // Check if we need to show age onboarding
+  const shouldShowAgeOnboarding = () => {
+    return isAuthenticated && user && !user.age && currentScreen === 'welcome'
+  }
+
   const renderCurrentScreen = () => {
+    // Show age onboarding if user is logged in but has no age
+    if (shouldShowAgeOnboarding()) {
+      return (
+        <AgeOnboarding
+          onComplete={handleAgeComplete}
+          onSkip={handleAgeSkip}
+        />
+      );
+    }
+
     switch(currentScreen) {
       case 'welcome':
         return <WelcomeScreen onStartGame={handleStartGame} />
