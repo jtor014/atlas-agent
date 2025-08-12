@@ -304,12 +304,15 @@ router.get('/performance/:sessionId', async (req, res) => {
 // Test AI generation (for development)
 router.post('/test-generation', async (req, res) => {
   try {
+    const { userAge, region = 'western-europe', category = 'Geography & Environment', difficulty = 'medium' } = req.body;
+    
     const testQuestion = await aiGenerator.generateAdaptiveQuestion({
-      region: 'western-europe',
-      category: 'Geography & Environment',
-      baseDifficulty: 'medium',
+      region,
+      category,
+      baseDifficulty: difficulty,
       playerProfile: { agentLevel: 'Field Agent' },
-      performanceContext: { recentAccuracy: 0.7, averageTime: 20, streakCount: 2 }
+      performanceContext: { recentAccuracy: 0.7, averageTime: 20, streakCount: 2 },
+      userAge
     });
 
     res.json({
