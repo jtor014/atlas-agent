@@ -11,9 +11,11 @@
 
 .briefing-header {
   background: linear-gradient(90deg, #b71c1c, #d32f2f);
-  padding: 1rem;
+  padding: 1rem 2rem;
   border-bottom: 3px solid #ff5722;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .classification-bar {
@@ -65,7 +67,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  padding: 2rem 0;
   gap: 2rem;
   width: 100%;
   min-height: 0;
@@ -76,13 +78,15 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
+  border-radius: 0;
+  padding: 1rem 2rem;
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem 0;
   flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .agent-avatar {
@@ -126,9 +130,13 @@
 .briefing-main {
   flex: 1;
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .briefing-text h3 {
@@ -172,10 +180,16 @@
 }
 
 .mission-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   margin-top: 2rem;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
 .details-section {
@@ -231,8 +245,29 @@
   color: #ffab00;
 }
 
+/* Regional Multimedia Content */
+.regional-content {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.briefing-multimedia {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(78, 205, 196, 0.2);
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.briefing-multimedia .multimedia-section {
+  margin-bottom: 15px;
+}
+
+.briefing-multimedia .multimedia-section:last-child {
+  margin-bottom: 0;
+}
+
 .briefing-controls {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(10px);
   padding: 1.5rem 2rem;
   display: flex;
@@ -243,7 +278,8 @@
   bottom: 0;
   z-index: 100;
   margin-top: auto;
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
   box-sizing: border-box;
 }
 
@@ -325,7 +361,7 @@
     padding: 1.5rem;
   }
   
-  .mission-details {
+  .details-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -349,7 +385,7 @@
     font-size: 1.8rem;
   }
 
-  .mission-details {
+  .details-grid {
     grid-template-columns: 1fr;
   }
 

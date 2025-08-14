@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import multimediaService from '../services/multimediaService'
 import './QuizMode.css'
 
 const API_BASE_URL = 'https://atlas-agent-production-4cd2.up.railway.app'
@@ -66,6 +67,11 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
     }
   }, [region])
 
+  // Initialize audio system
+  useEffect(() => {
+    multimediaService.initializeAudio()
+  }, [])
+
   // Timer effect
   useEffect(() => {
     if (isTimerActive && timeLeft > 0 && !showResult) {
@@ -106,6 +112,16 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
       const result = await response.json()
       setAnswerResult(result)
       
+      // Play audio feedback
+      try {
+        const currentScore = result.correct ? (score + 1) / questions.length : score / questions.length
+        const streak = 0 // TODO: Implement streak tracking
+        const responseTime = 30 - timeLeft
+        await multimediaService.playAnswerFeedback(result.correct, currentScore, streak, responseTime)
+      } catch (audioError) {
+        console.warn('Audio feedback failed:', audioError)
+      }
+      
       // Update score if correct
       if (result.correct) {
         setScore(score + 1)
@@ -124,6 +140,13 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
         correct: false,
         explanation: 'Error checking answer. Please try again.'
       })
+      
+      // Play error feedback
+      try {
+        await multimediaService.playAnswerFeedback(false)
+      } catch (audioError) {
+        console.warn('Audio feedback failed:', audioError)
+      }
     } finally {
       setSubmittingAnswer(false)
       setShowResult(true)
@@ -260,7 +283,12 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
                 } ${
                   selectedAnswer === index ? 'selected' : ''
                 }`}
-                onClick={() => !showResult && !submittingAnswer && handleAnswerSelect(index)}
+                onClick={async () => {
+                  if (!showResult && !submittingAnswer) {
+                    await multimediaService.playUISound('click')
+                    handleAnswerSelect(index)
+                  }
+                }}
                 disabled={showResult || submittingAnswer}
               >
                 <span className="answer-letter">
@@ -295,7 +323,10 @@ function QuizMode({ region, gameState, onComplete, onBack }) {
 
               <button 
                 className="next-btn"
-                onClick={handleNextQuestion}
+                onClick={async () => {
+                  await multimediaService.playUISound('transition')
+                  handleNextQuestion()
+                }}
               >
                 {currentQuestion < questions.length - 1 ? (
                   <>🔍 Next Lead</>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import RegionalMultimedia from './RegionalMultimedia';
 import './MissionBriefing.css';
 
 function MissionBriefing({ region, gameState, onStartMission, onBack }) {
@@ -315,31 +316,33 @@ function MissionBriefing({ region, gameState, onStartMission, onBack }) {
 
           {briefingStep === currentMission.briefing.length - 1 && (
             <div className="mission-details">
-              <div className="details-section">
-                <h4>🎯 Objectives</h4>
-                <ul>
-                  {currentMission.objectives.map((obj, idx) => (
-                    <li key={idx}>{obj}</li>
-                  ))}
-                </ul>
-              </div>
+              <div className="details-grid">
+                <div className="details-section">
+                  <h4>🎯 Objectives</h4>
+                  <ul>
+                    {currentMission.objectives.map((obj, idx) => (
+                      <li key={idx}>{obj}</li>
+                    ))}
+                  </ul>
+                </div>
 
-              <div className="details-section">
-                <h4>🛠️ Equipment Provided</h4>
-                <ul>
-                  {currentMission.equipment.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-              </div>
+                <div className="details-section">
+                  <h4>🛠️ Equipment Provided</h4>
+                  <ul>
+                    {currentMission.equipment.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
 
-              <div className="details-section">
-                <h4>📡 Field Contacts</h4>
-                <ul>
-                  {currentMission.contacts.map((contact, idx) => (
-                    <li key={idx}>{contact}</li>
-                  ))}
-                </ul>
+                <div className="details-section">
+                  <h4>📡 Field Contacts</h4>
+                  <ul>
+                    {currentMission.contacts.map((contact, idx) => (
+                      <li key={idx}>{contact}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
 
               <div className="mission-parameters">
@@ -349,6 +352,15 @@ function MissionBriefing({ region, gameState, onStartMission, onBack }) {
                 <div className="parameter">
                   <strong>🎯 Success Criteria:</strong> {currentMission.success_criteria}
                 </div>
+              </div>
+
+              {/* Regional Multimedia Content */}
+              <div className="regional-content">
+                <RegionalMultimedia 
+                  region={region.id} 
+                  userAge={gameState.userAge}
+                  className="briefing-multimedia"
+                />
               </div>
             </div>
           )}

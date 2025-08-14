@@ -13,6 +13,7 @@ import leaderboardRoutes from './routes/leaderboard.js';
 import authRoutes from './routes/auth.js';
 import learningRoutes from './routes/learning.js';
 import aiRoutes from './routes/ai.js';
+import multimediaRoutes from './routes/multimedia.js';
 
 dotenv.config();
 
@@ -91,6 +92,7 @@ app.use('/api/questions', questionRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/learning', learningRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/multimedia', multimediaRoutes);
 app.use('/auth', authRoutes);
 
 // Root endpoint
@@ -104,7 +106,8 @@ app.get('/', (req, res) => {
       questions: '/api/questions',
       leaderboard: '/api/leaderboard',
       learning: '/api/learning',
-      ai: '/api/ai'
+      ai: '/api/ai',
+      multimedia: '/api/multimedia'
     }
   });
 });

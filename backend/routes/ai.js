@@ -301,6 +301,96 @@ router.get('/performance/:sessionId', async (req, res) => {
   }
 });
 
+// Generate AI-powered mission narrative and sequence
+router.post('/generate-mission-narrative', async (req, res) => {
+  try {
+    const {
+      agentName,
+      startingRegion,
+      missionSequence = [],
+      userAge = null,
+      sessionId = null
+    } = req.body;
+
+    const aiGenerator = new AIQuestionGenerator();
+
+    // Create narrative prompt
+    const narrativePrompt = `Create a unique spy thriller narrative for Atlas Agent, a global intelligence game.
+
+MISSION PARAMETERS:
+- Agent Name: ${agentName}
+- Starting Region: ${startingRegion}
+- Mission Sequence: ${missionSequence.join(' → ')}
+- Player Age: ${userAge || 'Not specified'}
+
+NARRATIVE REQUIREMENTS:
+1. Create an overarching conspiracy/threat storyline that connects all regions
+2. Generate unique mission codenames for each region operation
+3. Provide region-specific storyline connections and plot developments
+4. Include mysterious antagonist organization with clear global motives
+5. Create compelling narrative tension that builds across regions
+6. Ensure age-appropriate content and complexity
+7. Generate unique character names for local contacts in each region
+
+OUTPUT FORMAT (JSON):
+{
+  "overall_narrative": {
+    "title": "Operation: [Unique Name]",
+    "threat_description": "Description of the global conspiracy/threat",
+    "antagonist_organization": "Name and brief description of enemy organization",
+    "victory_condition": "What needs to be achieved to stop the threat"
+  },
+  "regional_narratives": {
+    "region-id": {
+      "operation_name": "Operation: [Unique Name]",
+      "threat_level": "LOW|MODERATE|HIGH|CRITICAL|MAXIMUM|ULTIMATE",
+      "local_plot": "Region-specific story development",
+      "connection_to_overall": "How this region connects to the main plot",
+      "local_contacts": ["Contact Name (Location)", "Contact Name (Location)"],
+      "intelligence_target": "What the agent is trying to discover/accomplish"
+    }
+  },
+  "story_progression": "Brief description of how the narrative evolves across regions"
+}`;
+
+    const response = await aiGenerator.openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system", 
+          content: "You are a master storyteller specializing in spy thrillers and global conspiracy narratives. Create compelling, age-appropriate stories that make learning about world geography and cultures exciting."
+        },
+        {
+          role: "user",
+          content: narrativePrompt
+        }
+      ],
+      temperature: 0.8, // Higher creativity for narrative
+      max_tokens: 2000,
+      response_format: { type: "json_object" }
+    });
+
+    const narrative = JSON.parse(response.choices[0].message.content);
+    
+    res.json({
+      success: true,
+      session_id: sessionId,
+      agent_name: agentName,
+      narrative,
+      generation_cost: 0.004, // Approximate cost
+      created_at: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('AI Narrative Generation Error:', error);
+    res.status(500).json({
+      error: 'Failed to generate mission narrative',
+      message: error.message,
+      fallback_available: true
+    });
+  }
+});
+
 // Test AI generation (for development)
 router.post('/test-generation', async (req, res) => {
   try {

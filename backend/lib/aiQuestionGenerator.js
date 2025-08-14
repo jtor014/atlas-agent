@@ -7,7 +7,7 @@ class AIQuestionGenerator {
       apiKey: process.env.OPENAI_API_KEY
     });
     
-    // Question templates for different categories
+    // Question templates for different categories with scenario variety
     this.templates = {
       'Geography & Environment': {
         easy: 'Basic physical features, capitals, major landmarks',
@@ -35,6 +35,14 @@ class AIQuestionGenerator {
         hard: 'Complex synthesis, strategic thinking, multiple variable analysis'
       }
     };
+
+    // Question scenario types for variety
+    this.scenarioTypes = [
+      'infiltration_discovery', 'intercepted_intelligence', 'cover_story_requirement',
+      'contact_warning', 'surveillance_observation', 'decoded_message',
+      'border_crossing', 'safe_house_meeting', 'target_weakness',
+      'emergency_extraction', 'diplomatic_reception', 'underground_network'
+    ];
 
     // Performance-based difficulty adjustments
     this.difficultyAdjustments = {
@@ -246,39 +254,55 @@ AGE-APPROPRIATE CONTENT (Ages 17+):
     const adjustmentGuidance = this.difficultyAdjustments[difficulty.adjustment] || '';
     const ageGuidance = this.getAgeAppropriateGuidance(userAge);
     
-    return `Create a spy-themed geography question for Atlas Agent, a game where players are secret agents gathering intelligence worldwide.
+    return `Generate a dynamic, engaging geography question for Atlas Agent - vary the approach and avoid repetitive phrasing.
 
-MISSION PARAMETERS:
+MISSION CONTEXT:
 - Region: ${region}
 - Category: ${category}
-- Base Difficulty: ${difficulty.level}
+- Difficulty: ${difficulty.level}
 - Adjustment: ${adjustmentGuidance}
-- Category Focus: ${categoryGuidance}
+- Focus: ${categoryGuidance}
 
-PLAYER INTELLIGENCE PROFILE:
-${this.formatPlayerProfile(playerProfile, performanceContext)}
 ${ageGuidance}
 
-QUESTION REQUIREMENTS:
-1. Must fit the spy/intelligence theme (agents, missions, intelligence gathering)
-2. Should be educational and accurate
-3. Include exactly 4 multiple choice options
-4. Provide a helpful hint that doesn't give away the answer
-5. Include interesting context that makes learning memorable
-6. Respect cultural sensitivity while being engaging
+CREATIVITY REQUIREMENTS:
+1. VARY QUESTION OPENINGS - Use these diverse beginnings (rotate, don't repeat):
+   • "Your infiltration of [location] reveals..."
+   • "Intercepted communications mention..."
+   • "Satellite imagery shows unusual activity near..."
+   • "Your contact warns that understanding [concept] is crucial because..."
+   • "Mission briefing indicates..."
+   • "Intelligence suggests the key to this operation lies in..."
+   • "Your cover story requires knowledge of..."
+   • "Decoded messages reference..."
+   • "Field reconnaissance discovers..."
+   • "The target's weakness involves their connection to..."
+
+2. SHARP, SPECIFIC QUESTIONS:
+   - Avoid generic "which" questions when possible
+   - Use concrete scenarios and contexts
+   - Create questions that feel like real intelligence gathering
+   - Include specific details that paint a vivid picture
+
+3. ENGAGING SCENARIOS:
+   - Hotel lobbies where languages matter
+   - Border crossings requiring cultural knowledge
+   - Economic meetings where understanding trade routes is key
+   - Underground networks using historical references
+   - Technology hubs where geography affects infrastructure
 
 RESPONSE FORMAT (JSON):
 {
-  "question": "Engaging spy-themed question text",
-  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "question": "Sharp, specific, non-repetitive spy-themed question",
+  "options": ["Precise Option A", "Precise Option B", "Precise Option C", "Precise Option D"],
   "correctAnswer": 0,
   "difficulty": "${difficulty.level}",
-  "hint": "Helpful hint without revealing answer",
-  "explanation": "Why this answer is correct and educational context",
+  "hint": "Strategic hint without revealing answer",
+  "explanation": "Why this knowledge matters for intelligence work + educational context",
   "region": "${region}",
   "category": "${category}",
-  "spy_context": "Brief mission context that makes this knowledge relevant to a spy",
-  "educational_value": "What the player learns from this question"
+  "spy_context": "Specific operational context making this knowledge mission-critical",
+  "educational_value": "Concrete learning outcome from this scenario"
 }`;
   }
 
@@ -286,15 +310,18 @@ RESPONSE FORMAT (JSON):
    * System prompt for consistent AI behavior
    */
   getSystemPrompt() {
-    return `You are an expert educational content creator specializing in geography, history, and cultures worldwide. You create engaging spy-themed quiz questions for Atlas Agent, a game where players learn about the world while playing as secret agents.
+    return `You are a master educational content creator and spy thriller writer. You craft sharp, varied geography questions that feel like real intelligence scenarios - never generic or repetitive.
 
-Your questions should:
-- Be factually accurate and well-researched
-- Fit seamlessly into spy/espionage narratives
-- Provide genuine educational value
-- Be culturally respectful and sensitive
-- Scale appropriately for the specified difficulty level
-- Include interesting details that make learning memorable
+CRITICAL REQUIREMENTS:
+- NEVER start consecutive questions the same way
+- Use concrete, specific scenarios instead of abstract "which is" questions  
+- Make each question feel like actual espionage intelligence gathering
+- Vary vocabulary and sentence structure dramatically
+- Create vivid, memorable contexts that stick with learners
+- Be factually bulletproof and culturally respectful
+- Scale complexity appropriately for difficulty level
+
+Your questions should read like scenes from a spy novel, not a textbook quiz. Every question must feel fresh and engaging.
 
 Always respond with valid JSON in the exact format specified.`;
   }

@@ -16,7 +16,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '🗼 Intelligence suggests our target was last seen near famous landmarks in the City of Light...',
       isUnlocked: gameState.unlockedRegions.includes('western-europe'),
       isCompleted: gameState.completedRegions.includes('western-europe'),
-      nextUnlock: 'eastern-europe',
       position: { top: '25%', left: '45%' },
       icon: '🏰'
     },
@@ -29,7 +28,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '🏛️ Our sources report movement near the Red Square and ancient castles...',
       isUnlocked: gameState.unlockedRegions.includes('eastern-europe'),
       isCompleted: gameState.completedRegions.includes('eastern-europe'),
-      nextUnlock: 'north-america',
       position: { top: '20%', left: '55%' },
       icon: '🏛️'
     },
@@ -42,7 +40,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '🗽 Reports indicate movement from the Statue of Liberty to Hollywood signs...',
       isUnlocked: gameState.unlockedRegions.includes('north-america'),
       isCompleted: gameState.completedRegions.includes('north-america'),
-      nextUnlock: 'south-america',
       position: { top: '30%', left: '20%' },
       icon: '🗽'
     },
@@ -55,7 +52,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '⛰️ Witnesses spotted activity near Christ the Redeemer and ancient Inca ruins...',
       isUnlocked: gameState.unlockedRegions.includes('south-america'),
       isCompleted: gameState.completedRegions.includes('south-america'),
-      nextUnlock: 'east-asia',
       position: { top: '55%', left: '25%' },
       icon: '⛰️'
     },
@@ -68,7 +64,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '🏯 Activity reported from Tokyo skyscrapers to the Great Wall of China...',
       isUnlocked: gameState.unlockedRegions.includes('east-asia'),
       isCompleted: gameState.completedRegions.includes('east-asia'),
-      nextUnlock: 'southeast-asia',
       position: { top: '25%', left: '75%' },
       icon: '🏯'
     },
@@ -81,7 +76,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '🌺 Intelligence gathered from temples of Angkor to Singapore skylines...',
       isUnlocked: gameState.unlockedRegions.includes('southeast-asia'),
       isCompleted: gameState.completedRegions.includes('southeast-asia'),
-      nextUnlock: 'south-asia',
       position: { top: '40%', left: '70%' },
       icon: '🌺'
     },
@@ -94,7 +88,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '🕌 Trail leads from the Taj Mahal to Buddhist monasteries in the mountains...',
       isUnlocked: gameState.unlockedRegions.includes('south-asia'),
       isCompleted: gameState.completedRegions.includes('south-asia'),
-      nextUnlock: 'central-west-asia',
       position: { top: '35%', left: '65%' },
       icon: '🕌'
     },
@@ -107,7 +100,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '🏛️ Movement detected from Persian ruins to modern Dubai towers...',
       isUnlocked: gameState.unlockedRegions.includes('central-west-asia'),
       isCompleted: gameState.completedRegions.includes('central-west-asia'),
-      nextUnlock: 'africa',
       position: { top: '30%', left: '60%' },
       icon: '🏛️'
     },
@@ -120,7 +112,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '🐪 Desert winds carry rumors of activities from pyramids to Victoria Falls...',
       isUnlocked: gameState.unlockedRegions.includes('africa'),
       isCompleted: gameState.completedRegions.includes('africa'),
-      nextUnlock: 'oceania',
       position: { top: '45%', left: '50%' },
       icon: '🏜️'
     },
@@ -133,7 +124,6 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
       clue: '🏄 The trail ends somewhere between Sydney Opera House and remote Pacific atolls...',
       isUnlocked: gameState.unlockedRegions.includes('oceania'),
       isCompleted: gameState.completedRegions.includes('oceania'),
-      nextUnlock: null,
       position: { top: '55%', left: '80%' },
       icon: '🏄'
     }
