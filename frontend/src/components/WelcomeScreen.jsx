@@ -4,14 +4,19 @@ import AgeOnboarding from './AgeOnboarding'
 
 function WelcomeScreen({ onStartGame }) {
   const [agentName, setAgentName] = useState('')
-  const [showIntro, setShowIntro] = useState(true)
   const [showAgeCollection, setShowAgeCollection] = useState(false)
 
-  // Load saved agent name on component mount
+  // Load saved agent name and check if age collection is needed
   useEffect(() => {
     const savedAgentName = localStorage.getItem('atlas_agent_name');
     if (savedAgentName) {
       setAgentName(savedAgentName);
+    }
+    
+    // Check if we need to show age collection first
+    const hasAge = localStorage.getItem('atlas_user_age');
+    if (!hasAge) {
+      setShowAgeCollection(true);
     }
   }, []);
 
@@ -37,70 +42,11 @@ function WelcomeScreen({ onStartGame }) {
   const handleAgeComplete = (age) => {
     // Age has been set, now proceed to agent registration
     setShowAgeCollection(false);
-    setShowIntro(false);
   }
 
   const handleAgeSkip = () => {
     // User skipped age, continue to agent registration
     setShowAgeCollection(false);
-    setShowIntro(false);
-  }
-
-  if (showIntro) {
-    return (
-      <div className="welcome-screen">
-        <div className="intro-content">
-          <div className="agency-logo">
-            <span className="logo-icon">🌍</span>
-            <h1>ATLAS AGENCY</h1>
-            <p className="agency-tagline">Global Intelligence Division</p>
-          </div>
-          
-          <div className="mission-briefing">
-            <h2>🚨 URGENT MISSION BRIEFING</h2>
-            <div className="briefing-text">
-              <p>Agent, we have a situation that requires your immediate attention.</p>
-              <p>Our intelligence networks have detected suspicious activities across multiple international locations. We need an agent with exceptional geography knowledge to track down these leads.</p>
-              <p>Your mission: Travel the world, investigate locations, and piece together the clues to solve international cases.</p>
-            </div>
-            
-            <div className="mission-features">
-              <div className="feature">
-                <span className="feature-icon">🗺️</span>
-                <span>Explore 6 continents</span>
-              </div>
-              <div className="feature">
-                <span className="feature-icon">🔍</span>
-                <span>Solve location-based puzzles</span>
-              </div>
-              <div className="feature">
-                <span className="feature-icon">🏆</span>
-                <span>Earn agent rankings and badges</span>
-              </div>
-              <div className="feature">
-                <span className="feature-icon">⏱️</span>
-                <span>Complete missions efficiently</span>
-              </div>
-            </div>
-          </div>
-          
-          <button 
-            className="accept-mission-btn"
-            onClick={() => {
-              // Check if user has already provided age
-              const hasAge = localStorage.getItem('atlas_user_age');
-              if (hasAge) {
-                setShowIntro(false); // Skip age collection if already set
-              } else {
-                setShowAgeCollection(true); // Show age collection first
-              }
-            }}
-          >
-            🎯 Accept Mission
-          </button>
-        </div>
-      </div>
-    )
   }
 
   // Show age collection screen
