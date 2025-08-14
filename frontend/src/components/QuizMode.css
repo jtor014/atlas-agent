@@ -415,3 +415,73 @@
     gap: 15px;
   }
 }
+
+/* Story Context Styling */
+.story-context {
+  background: rgba(255, 87, 34, 0.1);
+  border: 1px solid rgba(255, 87, 34, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.story-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 87, 34, 0.2);
+}
+
+.story-icon {
+  font-size: 1.5rem;
+}
+
+.location-info {
+  font-weight: bold;
+  color: #ff5722;
+  font-size: 1.1rem;
+}
+
+.sequence-info {
+  margin-left: auto;
+  background: rgba(255, 87, 34, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: #ff5722;
+  font-weight: 600;
+}
+
+.story-narrative {
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+.story-narrative p {
+  margin: 0 0 1rem 0;
+  font-size: 1.05rem;
+  font-style: italic;
+}
+
+.progression-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 193, 7, 0.1);
+  border-left: 3px solid #ffc107;
+  border-radius: 0 8px 8px 0;
+  margin-top: 1rem;
+}
+
+.hint-icon {
+  font-size: 1rem;
+}
+
+.progression-hint em {
+  color: #ffc107;
+  font-size: 0.95rem;
+}

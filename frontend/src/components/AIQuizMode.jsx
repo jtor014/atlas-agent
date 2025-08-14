@@ -57,21 +57,54 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
         setPerformanceContext(initialPerformance);
       }
 
-      // Generate first question
-      const firstQuestion = await generateAIQuestion({
-        region: region.id,
-        category: questionCategories[0],
-        difficulty: adaptiveDifficulty
+      // Generate story-driven question sequence instead of individual questions
+      const storyResponse = await fetch(`${API_BASE_URL}/api/ai/generate-story-sequence`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          region: region.id,
+          agentName: gameState.agentName || 'Agent',
+          userAge: gameState.userAge,
+          sessionId: gameState.sessionId,
+          previousRegions: gameState.completedRegions
+        })
       });
 
-      if (firstQuestion) {
-        setQuestions([firstQuestion]);
-        setCurrentQuestion(0);
-        startTimer();
+      if (storyResponse.ok) {
+        const storyData = await storyResponse.json();
+        console.log('📚 Generated story sequence:', storyData.story_path);
+        
+        if (storyData.story_sequence && storyData.story_sequence.length > 0) {
+          setQuestions(storyData.story_sequence);
+          setCurrentQuestion(0);
+          startTimer();
+          
+          // Update AI stats
+          setAiStats(prev => ({
+            questionsGenerated: prev.questionsGenerated + storyData.story_sequence.length,
+            totalCost: prev.totalCost + (storyData.generation_cost || 0),
+            adaptiveAdjustments: prev.adaptiveAdjustments
+          }));
+        } else {
+          throw new Error('No story questions generated');
+        }
       } else {
-        // This should never happen now with fallback system
-        console.error('❌ Critical: Both AI and fallback systems failed');
-        setError('Unable to load questions. Please refresh and try again.');
+        // Fallback to original individual question generation
+        console.warn('Story sequence generation failed, falling back to individual questions');
+        const firstQuestion = await generateAIQuestion({
+          region: region.id,
+          category: questionCategories[0],
+          difficulty: adaptiveDifficulty
+        });
+
+        if (firstQuestion) {
+          setQuestions([firstQuestion]);
+          setCurrentQuestion(0);
+          startTimer();
+        } else {
+          console.error('❌ Critical: Both story sequence and individual question generation failed');
+          setError('Unable to load questions. Please refresh and try again.');
+        }
       }
 
     } catch (err) {
@@ -256,60 +289,19 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
 
   const handleNextQuestion = async () => {
     const nextQuestionIndex = currentQuestion + 1;
-    const nextCategoryIndex = (currentCategory + 1) % questionCategories.length;
     
-    // Update adaptive difficulty based on recent performance
-    const newDifficulty = calculateAdaptiveDifficulty();
-    setAdaptiveDifficulty(newDifficulty);
-    setCurrentCategory(nextCategoryIndex);
-
-    // Generate next question with AI
-    const nextQuestion = await generateAIQuestion({
-      region: region.id,
-      category: questionCategories[nextCategoryIndex],
-      difficulty: newDifficulty
-    });
-
-    if (nextQuestion) {
-      // Add to questions array or replace if we're cycling
-      const updatedQuestions = [...questions];
-      if (nextQuestionIndex < questions.length) {
-        updatedQuestions[nextQuestionIndex] = nextQuestion;
-      } else {
-        updatedQuestions.push(nextQuestion);
-      }
-      
-      setQuestions(updatedQuestions);
+    // Check if we have more questions in our story sequence
+    if (nextQuestionIndex < questions.length) {
+      // Move to next question in the story sequence
       setCurrentQuestion(nextQuestionIndex);
-      
-      // Reset question state
       setSelectedAnswer(null);
       setShowResult(false);
       setAnswerResult(null);
       startTimer();
     } else {
-      console.error('❌ AI question generation failed, retrying...');
-      // Retry once with simpler parameters
-      const retryQuestion = await generateAIQuestion({
-        region: region.id,
-        category: 'Geography & Environment', // Fallback to basic category
-        difficulty: 'medium' // Fallback to medium difficulty
-      });
-      
-      if (retryQuestion) {
-        const updatedQuestions = [...questions];
-        updatedQuestions.push(retryQuestion);
-        setQuestions(updatedQuestions);
-        setCurrentQuestion(nextQuestionIndex);
-        setSelectedAnswer(null);
-        setShowResult(false);
-        setAnswerResult(null);
-        startTimer();
-      } else {
-        // Final fallback: complete the quiz
-        console.error('💥 AI generation completely failed');
-        completeQuiz();
-      }
+      // End of story sequence - complete the quiz
+      console.log('📚 Story sequence completed');
+      completeQuiz();
     }
   };
 
@@ -408,6 +400,32 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
           </div>
         </div>
       </div>
+
+      {/* Story Context */}
+      {currentQ.story_context && (
+        <div className="story-context">
+          <div className="story-header">
+            <span className="story-icon">📍</span>
+            <span className="location-info">
+              {currentQ.location && currentQ.country ? (
+                `${currentQ.location}, ${currentQ.country}`
+              ) : (
+                'Current Location'
+              )}
+            </span>
+            <span className="sequence-info">Question {currentQuestion + 1} of {questions.length}</span>
+          </div>
+          <div className="story-narrative">
+            <p>{currentQ.story_context}</p>
+            {currentQ.progression_clue && (
+              <div className="progression-hint">
+                <span className="hint-icon">💡</span>
+                <em>{currentQ.progression_clue}</em>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Question Content */}
       <div className="question-container">
