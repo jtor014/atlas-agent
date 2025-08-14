@@ -80,9 +80,16 @@ router.get('/google/callback',
         { expiresIn: '7d' }
       );
 
-      // Redirect to frontend with token
+      // Check if user needs to complete registration (age)
+      const needsRegistration = !req.user.age;
+      
+      // Redirect to frontend with token and registration status
       const frontendUrl = process.env.FRONTEND_URL || 'https://atlas-agent.torkington.au';
-      res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+      if (needsRegistration) {
+        res.redirect(`${frontendUrl}?token=${token}&newUser=true`);
+      } else {
+        res.redirect(`${frontendUrl}?token=${token}`);
+      }
     } catch (error) {
       console.error('Callback error:', error);
       const frontendUrl = process.env.FRONTEND_URL || 'https://atlas-agent.torkington.au';
@@ -156,28 +163,42 @@ router.post('/age', authenticateToken, async (req, res) => {
   }
 });
 
-// Update user progress
+// Update user progress (improved with proper incremental updates)
 router.post('/progress', authenticateToken, async (req, res) => {
   try {
     const { 
       score, 
-      completedRegions, 
-      unlockedRegions, 
+      completedRegions = [], 
+      unlockedRegions = [], 
       totalQuestions, 
       correctAnswers,
-      agentLevel 
+      agentLevel,
+      sessionQuestions = 0,
+      sessionCorrect = 0
     } = req.body;
+
+    // Get current user data for incremental updates
+    const currentUser = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: {
+        totalScore: true,
+        totalQuestions: true,
+        correctAnswers: true,
+        gamesPlayed: true
+      }
+    });
 
     const user = await prisma.user.update({
       where: { id: req.user.userId },
       data: {
-        totalScore: score,
+        totalScore: Math.max(score || 0, currentUser.totalScore || 0), // Take highest score
         completedRegions: JSON.stringify(completedRegions),
         unlockedRegions: JSON.stringify(unlockedRegions),
-        totalQuestions,
-        correctAnswers,
-        agentLevel,
-        gamesPlayed: { increment: 1 }
+        totalQuestions: (currentUser.totalQuestions || 0) + (sessionQuestions || 0),
+        correctAnswers: (currentUser.correctAnswers || 0) + (sessionCorrect || 0),
+        agentLevel: agentLevel || currentUser.agentLevel,
+        gamesPlayed: { increment: 1 },
+        lastLoginAt: new Date()
       }
     });
 
@@ -186,12 +207,15 @@ router.post('/progress', authenticateToken, async (req, res) => {
       user: {
         totalScore: user.totalScore,
         agentLevel: user.agentLevel,
-        gamesPlayed: user.gamesPlayed
+        gamesPlayed: user.gamesPlayed,
+        totalQuestions: user.totalQuestions,
+        correctAnswers: user.correctAnswers,
+        accuracy: user.totalQuestions > 0 ? Math.round((user.correctAnswers / user.totalQuestions) * 100) : 0
       }
     });
   } catch (error) {
     console.error('Save progress error:', error);
-    res.status(500).json({ error: 'Failed to save progress' });
+    res.status(500).json({ error: 'Failed to save progress', details: error.message });
   }
 });
 

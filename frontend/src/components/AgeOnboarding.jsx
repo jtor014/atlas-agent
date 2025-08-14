@@ -62,10 +62,10 @@ function AgeOnboarding({ onComplete, onSkip }) {
     <div className="age-onboarding">
       <div className="onboarding-container">
         <div className="spy-header">
-          <div className="classification-label">AGENT PROFILE SETUP</div>
-          <h1 className="onboarding-title">🕵️ Welcome to Atlas Agent</h1>
+          <div className="classification-label">AGENT REGISTRATION REQUIRED</div>
+          <h1 className="onboarding-title">🕵️ Complete Your Agent Profile</h1>
           <p className="onboarding-subtitle">
-            We tailor missions to your experience level for the perfect challenge
+            Please provide your age to ensure missions are tailored to your skill level and interests
           </p>
         </div>
 

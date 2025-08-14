@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import WelcomeScreen from './components/WelcomeScreen'
 import WorldMap from './components/WorldMap'
@@ -17,7 +17,7 @@ function GameApp() {
   const [lastMissionScore, setLastMissionScore] = useState(0)
   const [showProfile, setShowProfile] = useState(false)
   // AI mode is now the default and only mode
-  const { user, isAuthenticated, saveProgress, updateUserAge } = useAuth()
+  const { user, isAuthenticated, needsRegistration, saveProgress, updateUserAge } = useAuth()
   
   // Available starting regions (beginner level)
   const startingRegions = ['western-europe', 'eastern-europe'];
@@ -80,9 +80,21 @@ function GameApp() {
     agentLevel: 'Trainee',
     sessionId: null,
     userId: null,
+    userAge: null,
     aiNarrative: null,
     generatingNarrative: false
   })
+
+  // Update gameState when user age changes
+  useEffect(() => {
+    const currentAge = user?.age || localStorage.getItem('atlas_user_age') || null;
+    if (currentAge !== gameState.userAge) {
+      setGameState(prev => ({
+        ...prev,
+        userAge: currentAge ? parseInt(currentAge) : null
+      }));
+    }
+  }, [user?.age, gameState.userAge]);
 
   const handleStartGame = async (agentName) => {
     try {
@@ -239,9 +251,10 @@ function GameApp() {
         score: newGameState.score,
         completedRegions: newGameState.completedRegions,
         unlockedRegions: newGameState.unlockedRegions,
-        totalQuestions: quizData.totalQuestions,
-        correctAnswers: quizData.correctAnswers,
-        agentLevel: newGameState.agentLevel
+        agentLevel: newGameState.agentLevel,
+        // Session-specific data for proper incremental updates
+        sessionQuestions: quizData.totalQuestions || 0,
+        sessionCorrect: quizData.correctAnswers || 0
       }
       
       await saveProgress(progressData)
@@ -286,28 +299,15 @@ function GameApp() {
     setCurrentScreen('welcome')
   }
 
-  // Check if we need to show age onboarding  
-  const shouldShowAgeOnboarding = () => {
-    // Only show age onboarding when user is about to start playing (after seeing welcome)
-    const hasSeenAgeOnboarding = localStorage.getItem('atlas_age_onboarding_completed');
-    const localAge = localStorage.getItem('atlas_user_age');
-    const hasStartedGame = localStorage.getItem('atlas_has_started_game');
-    
-    if (currentScreen !== 'welcome') return false;
-    
-    // Only show if user has indicated intent to play but hasn't set age
-    if (!hasStartedGame) return false;
-    
-    if (isAuthenticated && user) {
-      return !user.age;
-    } else {
-      return !hasSeenAgeOnboarding && !localAge;
-    }
+  // Check if we need to show registration (age collection)
+  const shouldShowRegistration = () => {
+    // Show registration if user is authenticated but needs to complete registration
+    return isAuthenticated && needsRegistration();
   }
 
   const renderCurrentScreen = () => {
-    // Show age onboarding if user is logged in but has no age
-    if (shouldShowAgeOnboarding()) {
+    // Show registration (age collection) if user is logged in but hasn't completed registration
+    if (shouldShowRegistration()) {
       return (
         <AgeOnboarding
           onComplete={handleAgeComplete}

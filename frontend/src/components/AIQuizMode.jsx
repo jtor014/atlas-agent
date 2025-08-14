@@ -86,11 +86,16 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
     try {
       setGeneratingNext(true);
       
+      // Get user age from localStorage or authenticated user
+      const localAge = localStorage.getItem('atlas_user_age');
+      const userAge = gameState.userAge || localAge || null;
+      
       const response = await fetch(`${API_BASE_URL}/api/ai/generate-question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...params,
+          userAge: userAge ? parseInt(userAge) : null,
           sessionId: gameState.sessionId,
           userId: gameState.userId
         })

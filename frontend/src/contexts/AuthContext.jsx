@@ -23,10 +23,17 @@ export const AuthProvider = ({ children }) => {
       // Check URL for auth callback token
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get('token');
+      const isNewUser = urlParams.get('newUser') === 'true';
       
       if (urlToken) {
         localStorage.setItem('atlas_token', urlToken);
         setToken(urlToken);
+        
+        // Store new user flag for registration flow
+        if (isNewUser) {
+          localStorage.setItem('atlas_needs_registration', 'true');
+        }
+        
         // Clean URL
         window.history.replaceState({}, document.title, window.location.pathname);
       }
@@ -131,11 +138,12 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (response.ok) {
-        // Update user with new age
+        // Update user with new age and clear registration flag
         setUser(prev => ({
           ...prev,
           age: age
         }));
+        localStorage.removeItem('atlas_needs_registration');
         return true;
       }
     } catch (error) {
@@ -144,10 +152,15 @@ export const AuthProvider = ({ children }) => {
     return false;
   };
 
+  const needsRegistration = () => {
+    return localStorage.getItem('atlas_needs_registration') === 'true' || (user && !user.age);
+  };
+
   const value = {
     user,
     loading,
     isAuthenticated: !!user,
+    needsRegistration,
     login,
     logout,
     saveProgress,
