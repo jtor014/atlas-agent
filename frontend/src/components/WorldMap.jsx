@@ -140,7 +140,12 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
   const getRegionClassName = (region) => {
     let className = 'region-marker'
     if (region.isCompleted) className += ' completed'
-    else if (region.isUnlocked) className += ' unlocked'
+    else if (region.isUnlocked) {
+      className += ' unlocked'
+      if (region.id === nextRecommendedRegion) {
+        className += ' recommended'
+      }
+    }
     else className += ' locked'
     return className
   }
@@ -149,6 +154,21 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
   const completedCount = gameState.completedRegions.length
   const unlockedCount = currentRegions.filter(r => r.isUnlocked).length
   const progressPercentage = Math.round((completedCount / currentRegions.length) * 100)
+
+  // Identify next recommended region based on mission sequence
+  const getNextRecommendedRegion = () => {
+    if (!gameState.missionSequence) return null;
+    
+    for (const regionId of gameState.missionSequence) {
+      const region = currentRegions.find(r => r.id === regionId);
+      if (region && region.isUnlocked && !region.isCompleted) {
+        return regionId;
+      }
+    }
+    return null;
+  };
+  
+  const nextRecommendedRegion = getNextRecommendedRegion();
 
   return (
     <div className="world-map">
@@ -269,7 +289,11 @@ function WorldMap({ gameState, onRegionSelect, onCountrySelect }) {
           <span>Mission Complete</span>
         </div>
         <div className="legend-item">
-          <span className="legend-icon available">🎯</span>
+          <span className="legend-icon recommended">🎯</span>
+          <span>Next Recommended</span>
+        </div>
+        <div className="legend-item">
+          <span className="legend-icon available">📍</span>
           <span>Available</span>
         </div>
         <div className="legend-item">
