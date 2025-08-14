@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import './WelcomeScreen.css'
+import AgeOnboarding from './AgeOnboarding'
 
 function WelcomeScreen({ onStartGame }) {
   const [agentName, setAgentName] = useState('')
   const [showIntro, setShowIntro] = useState(true)
+  const [showAgeCollection, setShowAgeCollection] = useState(false)
 
   // Load saved agent name on component mount
   useEffect(() => {
@@ -30,6 +32,18 @@ function WelcomeScreen({ onStartGame }) {
     if (newName.trim()) {
       localStorage.setItem('atlas_agent_name', newName.trim());
     }
+  }
+
+  const handleAgeComplete = (age) => {
+    // Age has been set, now proceed to agent registration
+    setShowAgeCollection(false);
+    setShowIntro(false);
+  }
+
+  const handleAgeSkip = () => {
+    // User skipped age, continue to agent registration
+    setShowAgeCollection(false);
+    setShowIntro(false);
   }
 
   if (showIntro) {
@@ -72,13 +86,31 @@ function WelcomeScreen({ onStartGame }) {
           
           <button 
             className="accept-mission-btn"
-            onClick={() => setShowIntro(false)}
+            onClick={() => {
+              // Check if user has already provided age
+              const hasAge = localStorage.getItem('atlas_user_age');
+              if (hasAge) {
+                setShowIntro(false); // Skip age collection if already set
+              } else {
+                setShowAgeCollection(true); // Show age collection first
+              }
+            }}
           >
             🎯 Accept Mission
           </button>
         </div>
       </div>
     )
+  }
+
+  // Show age collection screen
+  if (showAgeCollection) {
+    return (
+      <AgeOnboarding
+        onComplete={handleAgeComplete}
+        onSkip={handleAgeSkip}
+      />
+    );
   }
 
   return (

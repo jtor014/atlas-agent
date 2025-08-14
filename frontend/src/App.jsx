@@ -299,22 +299,8 @@ function GameApp() {
     setCurrentScreen('welcome')
   }
 
-  // Check if we need to show registration (age collection)
-  const shouldShowRegistration = () => {
-    // Show registration if user is authenticated but needs to complete registration
-    return isAuthenticated && needsRegistration();
-  }
-
   const renderCurrentScreen = () => {
-    // Show registration (age collection) if user is logged in but hasn't completed registration
-    if (shouldShowRegistration()) {
-      return (
-        <AgeOnboarding
-          onComplete={handleAgeComplete}
-          onSkip={handleAgeSkip}
-        />
-      );
-    }
+    // Age collection is now handled within WelcomeScreen flow
 
     switch(currentScreen) {
       case 'welcome':
