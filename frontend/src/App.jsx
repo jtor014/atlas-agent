@@ -71,7 +71,7 @@ function GameApp() {
   };
   
   const [gameState, setGameState] = useState({
-    agentName: '',
+    agentName: localStorage.getItem('atlas_agent_name') || '',
     score: 0,
     completedRegions: [],
     unlockedRegions: [getRandomStartingRegion()],

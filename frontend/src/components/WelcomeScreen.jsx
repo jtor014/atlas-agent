@@ -1,15 +1,34 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './WelcomeScreen.css'
 
 function WelcomeScreen({ onStartGame }) {
   const [agentName, setAgentName] = useState('')
   const [showIntro, setShowIntro] = useState(true)
 
+  // Load saved agent name on component mount
+  useEffect(() => {
+    const savedAgentName = localStorage.getItem('atlas_agent_name');
+    if (savedAgentName) {
+      setAgentName(savedAgentName);
+    }
+  }, []);
+
   const handleStartMission = () => {
     if (agentName.trim()) {
+      // Save agent name for persistence between sessions
+      localStorage.setItem('atlas_agent_name', agentName.trim());
       // Mark that user wants to start playing (triggers age onboarding if needed)
       localStorage.setItem('atlas_has_started_game', 'true');
       onStartGame(agentName.trim())
+    }
+  }
+
+  const handleAgentNameChange = (e) => {
+    const newName = e.target.value;
+    setAgentName(newName);
+    // Save immediately as user types (for better UX)
+    if (newName.trim()) {
+      localStorage.setItem('atlas_agent_name', newName.trim());
     }
   }
 
@@ -77,7 +96,7 @@ function WelcomeScreen({ onStartGame }) {
               type="text"
               id="agentName"
               value={agentName}
-              onChange={(e) => setAgentName(e.target.value)}
+              onChange={handleAgentNameChange}
               onKeyPress={(e) => e.key === 'Enter' && handleStartMission()}
               placeholder="Enter your codename..."
               maxLength={20}
