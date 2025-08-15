@@ -4,6 +4,20 @@ import './MissionBriefing.css';
 
 function MissionBriefing({ region, gameState, onStartMission, onBack }) {
   const [briefingStep, setBriefingStep] = useState(0);
+  
+  // Region data for context
+  const allRegions = [
+    { id: 'western-europe', difficulty: 'beginner', name: 'Western Europe' },
+    { id: 'eastern-europe', difficulty: 'beginner', name: 'Eastern Europe' },
+    { id: 'north-america', difficulty: 'intermediate', name: 'North America' },
+    { id: 'south-america', difficulty: 'intermediate', name: 'South America' },
+    { id: 'east-asia', difficulty: 'intermediate', name: 'East Asia' },
+    { id: 'southeast-asia', difficulty: 'advanced', name: 'Southeast Asia' },
+    { id: 'south-asia', difficulty: 'advanced', name: 'South Asia' },
+    { id: 'central-west-asia', difficulty: 'advanced', name: 'Central & West Asia' },
+    { id: 'africa', difficulty: 'expert', name: 'Africa' },
+    { id: 'oceania', difficulty: 'expert', name: 'Oceania' }
+  ];
 
   // Enhanced mission briefings for each region
   const missionData = {
@@ -240,32 +254,79 @@ function MissionBriefing({ region, gameState, onStartMission, onBack }) {
     }
   };
 
-  // Use AI-generated narrative if available, otherwise fall back to default
+  // Use AI-generated narrative and route context
   const getAIEnhancedMission = () => {
     const defaultMission = missionData[region.id] || missionData['western-europe'];
     
+    // Get current mission position in the random sequence
+    const currentIndex = gameState.missionSequence.findIndex(regionId => regionId === region.id);
+    const isFirstMission = gameState.completedRegions.length === 0; // First mission if no regions completed
+    const isLastMission = currentIndex === gameState.missionSequence.length - 1;
+    const previousRegion = currentIndex > 0 ? gameState.missionSequence[currentIndex - 1] : null;
+    const nextRegion = currentIndex < gameState.missionSequence.length - 1 ? gameState.missionSequence[currentIndex + 1] : null;
+    
+    // Create dynamic briefing based on route context
+    let routeContextBriefing = [];
+    
+    if (isFirstMission) {
+      routeContextBriefing.push(`Agent ${gameState.agentName}, this is your first assignment in our global operation.`);
+      routeContextBriefing.push(`Intelligence has detected suspicious activity starting here in ${region.name}. This is where the trail begins.`);
+    } else {
+      const prevRegionName = allRegions.find(r => r.id === previousRegion)?.name || 'the previous region';
+      routeContextBriefing.push(`Excellent work in ${prevRegionName}, Agent ${gameState.agentName}. The trail has led us here to ${region.name}.`);
+      routeContextBriefing.push(`Our intelligence network has traced connections from your previous mission to this region.`);
+    }
+    
+    if (nextRegion) {
+      const nextRegionName = allRegions.find(r => r.id === nextRegion)?.name || 'the next region';
+      routeContextBriefing.push(`Success here will unlock intelligence leading us to ${nextRegionName}. Every piece of the puzzle matters.`);
+    } else if (isLastMission) {
+      routeContextBriefing.push(`This is our final operation, Agent. Everything you've learned leads to this moment. The world depends on your success.`);
+    } else {
+      routeContextBriefing.push(`Complete this mission to advance deeper into the global conspiracy network.`);
+    }
+    
+    // Add mission-specific context
+    routeContextBriefing.push(`Your target: Decode the geographical and cultural intelligence hidden in ${region.name}.`);
+    
+    // Use AI-generated content if available
     if (gameState.aiNarrative && gameState.aiNarrative.regional_narratives && gameState.aiNarrative.regional_narratives[region.id]) {
       const aiRegion = gameState.aiNarrative.regional_narratives[region.id];
       return {
         ...defaultMission,
-        title: aiRegion.operation_name || defaultMission.title,
+        title: aiRegion.operation_name || `Operation: ${region.name} Intelligence`,
         threat_level: aiRegion.threat_level || defaultMission.threat_level,
         briefing: [
-          `Agent ${gameState.agentName}, ${aiRegion.local_plot}`,
-          aiRegion.connection_to_overall || defaultMission.briefing[1],
-          `Intelligence Target: ${aiRegion.intelligence_target}`,
-          defaultMission.briefing[defaultMission.briefing.length - 1] // Keep final warning/motivation
+          routeContextBriefing[0],
+          aiRegion.local_plot || routeContextBriefing[1],
+          aiRegion.connection_to_overall || routeContextBriefing[2],
+          `Intelligence Target: ${aiRegion.intelligence_target || defaultMission.briefing[defaultMission.briefing.length - 1]}`
         ],
         contacts: aiRegion.local_contacts || defaultMission.contacts,
-        // Keep other properties from default
-        objectives: defaultMission.objectives,
+        objectives: [
+          `Investigate intelligence leads in ${region.name}`,
+          'Decode geographical and cultural references',
+          `Navigate ${region.name}'s unique challenges`,
+          `Achieve 70%+ accuracy to unlock ${nextRegion ? allRegions.find(r => r.id === nextRegion)?.name : 'mission completion'}`
+        ],
         equipment: defaultMission.equipment,
         time_limit: defaultMission.time_limit,
         success_criteria: defaultMission.success_criteria
       };
     }
     
-    return defaultMission;
+    // Fallback to route-aware mission
+    return {
+      ...defaultMission,
+      title: `Operation: ${region.name} Intelligence`,
+      briefing: routeContextBriefing,
+      objectives: [
+        `Investigate intelligence leads in ${region.name}`,
+        'Decode geographical and cultural references',
+        `Navigate ${region.name}'s unique challenges`,
+        `Achieve 70%+ accuracy to unlock ${nextRegion ? allRegions.find(r => r.id === nextRegion)?.name : 'mission completion'}`
+      ]
+    };
   };
 
   const currentMission = getAIEnhancedMission();

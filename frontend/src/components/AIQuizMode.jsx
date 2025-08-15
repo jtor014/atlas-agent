@@ -75,7 +75,15 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
         console.log('📚 Generated story sequence:', storyData.story_path);
         
         if (storyData.story_sequence && storyData.story_sequence.length > 0) {
-          setQuestions(storyData.story_sequence);
+          // Transform backend data structure to match frontend expectations
+          const transformedQuestions = storyData.story_sequence.map(q => ({
+            ...q,
+            answers: q.options || q.answers, // Backend uses 'options', frontend expects 'answers'
+            id: q.id || `story_${Date.now()}_${Math.random()}`
+          }));
+          
+          console.log('📚 Transformed questions:', transformedQuestions);
+          setQuestions(transformedQuestions);
           setCurrentQuestion(0);
           startTimer();
           
@@ -98,12 +106,34 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
         });
 
         if (firstQuestion) {
-          setQuestions([firstQuestion]);
+          const transformedQuestion = {
+            ...firstQuestion,
+            answers: firstQuestion.options || firstQuestion.answers,
+            id: firstQuestion.id || `fallback_${Date.now()}`
+          };
+          setQuestions([transformedQuestion]);
           setCurrentQuestion(0);
           startTimer();
         } else {
           console.error('❌ Critical: Both story sequence and individual question generation failed');
-          setError('Unable to load questions. Please refresh and try again.');
+          // Use hardcoded fallback as last resort
+          const hardcodedQuestion = {
+            id: 'hardcoded_fallback',
+            question: `What is the capital city of ${region.name}?`,
+            answers: ['Option A', 'Option B', 'Option C', 'Option D'],
+            correctAnswer: 0,
+            hint: 'Think about the major political center of this region.',
+            explanation: 'This is a basic geography question to test the quiz system.',
+            difficulty: 'easy',
+            region: region.id,
+            category: 'Basic Geography',
+            spy_context: `Mission briefing requires knowledge of ${region.name}`,
+            educational_value: 'Understanding capital cities is fundamental for agents.'
+          };
+          
+          setQuestions([hardcodedQuestion]);
+          setCurrentQuestion(0);
+          startTimer();
         }
       }
 
@@ -198,6 +228,7 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
   };
 
   const startTimer = () => {
+    console.log('🕐 Starting timer...');
     // Age-adaptive timer - younger users get more time
     const userAge = localStorage.getItem('atlas_user_age');
     let timerSeconds = 30; // default
@@ -214,21 +245,22 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
       // 15+ uses default 30 seconds
     }
     
+    console.log(`🕐 Timer set to ${timerSeconds} seconds`);
     setTimeLeft(timerSeconds);
     setIsTimerActive(true);
   };
 
   // Timer countdown
   useEffect(() => {
-    if (isTimerActive && timeLeft > 0) {
+    if (isTimerActive && timeLeft > 0 && !showResult) {
       const timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
       }, 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && isTimerActive) {
+    } else if (timeLeft === 0 && isTimerActive && !showResult) {
       handleTimeUp();
     }
-  }, [timeLeft, isTimerActive]);
+  }, [timeLeft, isTimerActive, showResult]);
 
   const handleTimeUp = () => {
     setIsTimerActive(false);
@@ -292,12 +324,17 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
     
     // Check if we have more questions in our story sequence
     if (nextQuestionIndex < questions.length) {
-      // Move to next question in the story sequence
+      // Reset all states for next question
+      setIsTimerActive(false); // Stop current timer first
       setCurrentQuestion(nextQuestionIndex);
       setSelectedAnswer(null);
       setShowResult(false);
       setAnswerResult(null);
-      startTimer();
+      
+      // Start timer for next question with a small delay to ensure state is reset
+      setTimeout(() => {
+        startTimer();
+      }, 100);
     } else {
       // End of story sequence - complete the quiz
       console.log('📚 Story sequence completed');
@@ -369,7 +406,20 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
   }
 
   const currentQ = questions[currentQuestion];
-  if (!currentQ) return null;
+  console.log('🎯 Current Question:', { currentQuestion, questionsLength: questions.length, currentQ });
+  
+  if (!currentQ) {
+    console.warn('❌ No current question available');
+    return (
+      <div className="quiz-container">
+        <div className="loading-content">
+          <h3>⚠️ No Question Available</h3>
+          <p>Debug Info:</p>
+          <pre>{JSON.stringify({ currentQuestion, questionsLength: questions.length }, null, 2)}</pre>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="quiz-container">
@@ -438,11 +488,11 @@ function AIQuizMode({ region, gameState, onComplete, onBack }) {
         </div>
 
         {!showResult ? (
-          <div className="answers-grid">
-            {currentQ.answers.map((answer, index) => (
+          <div className="answers-container">
+            {currentQ.answers && currentQ.answers.map((answer, index) => (
               <button
                 key={index}
-                className={`answer-button ${selectedAnswer === index ? 'selected' : ''}`}
+                className={`answer-btn ${selectedAnswer === index ? 'selected' : ''}`}
                 onClick={() => handleAnswerSelect(index)}
                 disabled={selectedAnswer !== null || submittingAnswer}
                 aria-label={`Option ${String.fromCharCode(65 + index)}: ${answer}`}

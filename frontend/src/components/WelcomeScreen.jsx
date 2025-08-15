@@ -4,18 +4,23 @@ import AgeOnboarding from './AgeOnboarding'
 
 function WelcomeScreen({ onStartGame }) {
   const [agentName, setAgentName] = useState('')
+  const [userAge, setUserAge] = useState('')
   const [showAgeCollection, setShowAgeCollection] = useState(false)
 
-  // Load saved agent name and check if age collection is needed
+  // Load saved data and check if age collection is needed
   useEffect(() => {
     const savedAgentName = localStorage.getItem('atlas_agent_name');
+    const savedAge = localStorage.getItem('atlas_user_age');
+    
     if (savedAgentName) {
       setAgentName(savedAgentName);
     }
+    if (savedAge) {
+      setUserAge(savedAge);
+    }
     
-    // Check if we need to show age collection first
-    const hasAge = localStorage.getItem('atlas_user_age');
-    if (!hasAge) {
+    // Always show age collection first if no age is set
+    if (!savedAge) {
       setShowAgeCollection(true);
     }
   }, []);
@@ -40,12 +45,14 @@ function WelcomeScreen({ onStartGame }) {
   }
 
   const handleAgeComplete = (age) => {
-    // Age has been set, now proceed to agent registration
+    // Age has been set, update local state and proceed to agent registration
+    setUserAge(age.toString());
+    localStorage.setItem('atlas_user_age', age.toString());
     setShowAgeCollection(false);
   }
 
   const handleAgeSkip = () => {
-    // User skipped age, continue to agent registration
+    // User skipped age, continue to agent registration without age
     setShowAgeCollection(false);
   }
 
@@ -68,6 +75,33 @@ function WelcomeScreen({ onStartGame }) {
         </div>
         
         <div className="registration-form">
+          {userAge && (
+            <div className="age-display">
+              <p>👤 Agent Age: {userAge} years old</p>
+              <button 
+                className="change-age-btn"
+                onClick={() => setShowAgeCollection(true)}
+              >
+                Change Age
+              </button>
+            </div>
+          )}
+          
+          {agentName && (
+            <div className="agent-name-display">
+              <p>🕵️ Current Agent: {agentName}</p>
+              <button 
+                className="clear-name-btn"
+                onClick={() => {
+                  setAgentName('');
+                  localStorage.removeItem('atlas_agent_name');
+                }}
+              >
+                Use Different Name
+              </button>
+            </div>
+          )}
+          
           <div className="form-group">
             <label htmlFor="agentName">Agent Codename:</label>
             <input
@@ -103,12 +137,6 @@ function WelcomeScreen({ onStartGame }) {
               disabled={!agentName.trim()}
             >
               🚁 Deploy to Field
-            </button>
-            <button 
-              className="back-btn"
-              onClick={() => setShowIntro(true)}
-            >
-              ← Back to Briefing
             </button>
           </div>
         </div>

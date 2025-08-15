@@ -19,32 +19,23 @@ function GameApp() {
   // AI mode is now the default and only mode
   const { user, isAuthenticated, needsRegistration, saveProgress, updateUserAge } = useAuth()
   
-  // Available starting regions (beginner level)
-  const startingRegions = ['western-europe', 'eastern-europe'];
+  // All available regions - players can start anywhere!
+  const allRegions = [
+    { id: 'western-europe', difficulty: 'beginner', name: 'Western Europe' },
+    { id: 'eastern-europe', difficulty: 'beginner', name: 'Eastern Europe' },
+    { id: 'north-america', difficulty: 'intermediate', name: 'North America' },
+    { id: 'south-america', difficulty: 'intermediate', name: 'South America' },
+    { id: 'east-asia', difficulty: 'intermediate', name: 'East Asia' },
+    { id: 'southeast-asia', difficulty: 'advanced', name: 'Southeast Asia' },
+    { id: 'south-asia', difficulty: 'advanced', name: 'South Asia' },
+    { id: 'central-west-asia', difficulty: 'advanced', name: 'Central & West Asia' },
+    { id: 'africa', difficulty: 'expert', name: 'Africa' },
+    { id: 'oceania', difficulty: 'expert', name: 'Oceania' }
+  ];
   
-  // Generate randomized mission sequence
-  const generateRandomMissionSequence = () => {
-    // All regions with their difficulty levels
-    const allRegions = [
-      { id: 'western-europe', difficulty: 'beginner' },
-      { id: 'eastern-europe', difficulty: 'beginner' },
-      { id: 'north-america', difficulty: 'intermediate' },
-      { id: 'south-america', difficulty: 'intermediate' },
-      { id: 'east-asia', difficulty: 'intermediate' },
-      { id: 'southeast-asia', difficulty: 'advanced' },
-      { id: 'south-asia', difficulty: 'advanced' },
-      { id: 'central-west-asia', difficulty: 'advanced' },
-      { id: 'africa', difficulty: 'expert' },
-      { id: 'oceania', difficulty: 'expert' }
-    ];
-    
-    // Group by difficulty to ensure progression
-    const beginner = allRegions.filter(r => r.difficulty === 'beginner');
-    const intermediate = allRegions.filter(r => r.difficulty === 'intermediate');
-    const advanced = allRegions.filter(r => r.difficulty === 'advanced');
-    const expert = allRegions.filter(r => r.difficulty === 'expert');
-    
-    // Shuffle each group
+  // Generate randomized mission sequence starting from any region
+  const generateRandomMissionSequence = (startingRegionId = null) => {
+    // Shuffle all regions
     const shuffleArray = (array) => {
       const shuffled = [...array];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -54,36 +45,87 @@ function GameApp() {
       return shuffled;
     };
     
-    // Create randomized sequence while maintaining difficulty progression
-    const sequence = [
-      ...shuffleArray(beginner),
-      ...shuffleArray(intermediate), 
-      ...shuffleArray(advanced),
-      ...shuffleArray(expert)
-    ];
+    let shuffledRegions = shuffleArray([...allRegions]);
     
-    return sequence.map(r => r.id);
+    // If a specific starting region is provided, put it first
+    if (startingRegionId) {
+      shuffledRegions = shuffledRegions.filter(r => r.id !== startingRegionId);
+      const startingRegion = allRegions.find(r => r.id === startingRegionId);
+      if (startingRegion) {
+        shuffledRegions.unshift(startingRegion);
+      }
+    }
+    
+    return shuffledRegions.map(r => r.id);
   };
   
-  // Generate initial random starting region
+  // Generate initial random starting region from any available region
   const getRandomStartingRegion = () => {
-    return startingRegions[Math.floor(Math.random() * startingRegions.length)];
+    return allRegions[Math.floor(Math.random() * allRegions.length)].id;
   };
   
-  const [gameState, setGameState] = useState({
-    agentName: localStorage.getItem('atlas_agent_name') || '',
-    score: 0,
-    completedRegions: [],
-    unlockedRegions: [getRandomStartingRegion()],
-    missionSequence: generateRandomMissionSequence(),
-    currentMission: null,
-    agentLevel: 'Trainee',
-    sessionId: null,
-    userId: null,
-    userAge: null,
-    aiNarrative: null,
-    generatingNarrative: false
-  })
+  // Initialize gameState with session management
+  const initializeGameState = () => {
+    const tempSession = sessionStorage.getItem('atlas_temp_session');
+    const isAuthenticated = localStorage.getItem('atlas_token');
+    
+    // Agent names are persistent for ALL users (authenticated or not)
+    // Only cleared when explicitly starting a new game
+    const agentName = localStorage.getItem('atlas_agent_name') || '';
+    
+    // Try to restore existing game session
+    const savedGameState = isAuthenticated ? 
+      localStorage.getItem('atlas_game_state') : 
+      sessionStorage.getItem('atlas_game_state');
+    
+    if (savedGameState) {
+      try {
+        const parsed = JSON.parse(savedGameState);
+        // Restore saved game state but ensure we have current user data
+        return {
+          ...parsed,
+          agentName: agentName || parsed.agentName,
+          userId: user?.id || null,
+          userAge: user?.age || localStorage.getItem('atlas_user_age') || parsed.userAge
+        };
+      } catch (error) {
+        console.warn('Failed to parse saved game state:', error);
+      }
+    }
+    
+    // Create new game state
+    const startingRegion = getRandomStartingRegion();
+    const missionSequence = generateRandomMissionSequence(startingRegion);
+    
+    return {
+      agentName,
+      score: 0,
+      completedRegions: [],
+      unlockedRegions: [startingRegion],
+      missionSequence,
+      currentMission: null,
+      agentLevel: 'Trainee',
+      sessionId: null,
+      userId: null,
+      userAge: null,
+      aiNarrative: null,
+      generatingNarrative: false
+    };
+  };
+
+  const [gameState, setGameState] = useState(initializeGameState())
+
+  // Save game state when it changes
+  useEffect(() => {
+    if (gameState.missionSequence.length > 0) {
+      const stateToSave = JSON.stringify(gameState);
+      if (isAuthenticated) {
+        localStorage.setItem('atlas_game_state', stateToSave);
+      } else if (sessionStorage.getItem('atlas_temp_session')) {
+        sessionStorage.setItem('atlas_game_state', stateToSave);
+      }
+    }
+  }, [gameState, isAuthenticated]);
 
   // Update gameState when user age changes
   useEffect(() => {
@@ -98,25 +140,43 @@ function GameApp() {
 
   const handleStartGame = async (agentName) => {
     try {
-      // Generate new randomized sequence for this game
-      const newMissionSequence = generateRandomMissionSequence();
-      const newStartingRegion = getRandomStartingRegion();
+      // Clear any existing game state for fresh start
+      localStorage.removeItem('atlas_game_state');
+      sessionStorage.removeItem('atlas_game_state');
       
-      // Create a new game session on the backend
-      const response = await fetch('https://atlas-agent-production-4cd2.up.railway.app/api/game/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ agentName })
-      })
-
+      // Generate new randomized starting region and sequence
+      const newStartingRegion = getRandomStartingRegion();
+      const newMissionSequence = generateRandomMissionSequence(newStartingRegion);
+      
+      // Create session - permanent if Google authenticated, temporary otherwise
       let sessionId;
-      if (response.ok) {
-        const data = await response.json()
-        sessionId = data.sessionId;
+      if (isAuthenticated && user) {
+        // Create permanent session on backend for authenticated users
+        const response = await fetch('https://atlas-agent-production-4cd2.up.railway.app/api/game/start', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('atlas_token')}`
+          },
+          body: JSON.stringify({ agentName })
+        });
+
+        if (response.ok) {
+          const data = await response.json()
+          sessionId = data.sessionId;
+        } else {
+          console.warn('Failed to create backend session, using local session')
+          sessionId = `local_${Date.now()}`;
+        }
       } else {
-        console.warn('Failed to create backend session, using local session')
-        sessionId = `local_${Date.now()}`;
+        // Create temporary local session for non-authenticated users
+        sessionId = `temp_${Date.now()}`;
+        // Mark session as temporary - will clear on browser close
+        sessionStorage.setItem('atlas_temp_session', sessionId);
       }
+      
+      // Save agent name for ALL users (authenticated and non-authenticated)
+      localStorage.setItem('atlas_agent_name', agentName);
       
       // Update game state with new randomized setup
       setGameState(prev => ({ 
@@ -136,10 +196,10 @@ function GameApp() {
       
     } catch (error) {
       console.error('Error creating game session:', error)
-      // Fallback to local session
-      const newMissionSequence = generateRandomMissionSequence();
+      // Fallback to temporary session
       const newStartingRegion = getRandomStartingRegion();
-      const sessionId = `local_${Date.now()}`;
+      const newMissionSequence = generateRandomMissionSequence(newStartingRegion);
+      const sessionId = `temp_${Date.now()}`;
       
       setGameState(prev => ({ 
         ...prev, 
@@ -300,7 +360,21 @@ function GameApp() {
   }
 
   const renderCurrentScreen = () => {
-    // Age collection is now handled within WelcomeScreen flow
+    // If user is authenticated and has completed setup, go directly to map
+    if (isAuthenticated && user && user.age) {
+      if (currentScreen === 'welcome' || currentScreen === 'age') {
+        setCurrentScreen('worldmap');
+        return null; // Will re-render with worldmap
+      }
+    }
+    
+    // If not authenticated but has temporary session data, show map
+    if (!isAuthenticated && gameState.agentName && (localStorage.getItem('atlas_user_age') || gameState.userAge)) {
+      if (currentScreen === 'welcome') {
+        setCurrentScreen('worldmap');
+        return null; // Will re-render with worldmap  
+      }
+    }
 
     switch(currentScreen) {
       case 'welcome':
